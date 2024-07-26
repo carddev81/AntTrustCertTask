@@ -1,0 +1,2073 @@
+<!-- ###################################################################### -->
+<!-- #              ANT Trust Certficate Task Jar Build File              # -->
+<!-- # This build file will configure and make the ANT Jasypt Password    # -->
+<!-- # Encryptor Jar by pulling the code from a cvs server. Little or no  # -->
+<!-- # intervention is required by the person running this build file. It # -->
+<!-- # requires a few things installed on the machine that is running it  # -->
+<!-- # in order to work. These are listed below.                          # -->
+<!-- #                                                                    # -->
+<!-- # Ant:                                                               # -->
+<!-- #     Not suprisingly as this build file is written in ant it does   # -->
+<!-- #     require that a version of ant is installed. it should be       # -->
+<!-- #     version 1.9.4 or greater. To aquire ant, install, and          # -->
+<!-- #     configure. Please refer to http://ant.apache.org/              # -->
+<!-- #                                                                    # -->
+<!-- # antContrib:                                                        # -->
+<!-- #     ant-contrib is a set of extensions to ant that provide some    # -->
+<!-- #     decision style of control not included in the basic ant        # -->
+<!-- #     distribution. These are things like if and for loops. You      # -->
+<!-- #     can obtain it at http://ant-contrib.sourceforge.net. You only  # -->
+<!-- #     need to add the jar file (ant-contrib-XXX.jar) to the lib      # -->
+<!-- #     directory underneath your ant installation. so install ant     # -->
+<!-- #     first.                                                         # -->
+<!-- #                                                                    # -->
+<!-- # antTaskTagsReport:                                                 # -->
+<!-- #     ant-tasktag-reports is a jar file that is used in generating   # -->
+<!-- #     a task tags html report that is sent via an email attachment   # -->
+<!-- #     at the end of the build process. Some examples of task tags    # -->
+<!-- #     would be: TODO, FIXME, and CLEANME tags. These tags are found  # -->
+<!-- #     within the source files (*.java, *.js, *.jsp, ect.) of the     # -->
+<!-- #     application. The ant-tasktag-reports-XXX.jar is not included   # -->
+<!-- #     in the basic ant distribution. You can obtain it from a known  # -->
+<!-- #     ant builder/co-worker via an email attachment or by asking     # -->
+<!-- #     him/her where the distribution source folder is located        # -->
+<!-- #     via email. You only need to add the jar file                   # -->
+<!-- #     (ant-tasktag-reports-XXX.jar) to the lib directory underneath  # -->
+<!-- #     your ant installation. So install ant first.                   # -->
+<!-- #                                                                    # -->
+<!-- # antJasyptPasswordEncryptor:                                        # -->
+<!-- #     ant-jasypt-encryptor is a jar file that is used in generating  # -->
+<!-- #     encrypted passwords during this build process and is also used # -->
+<!-- #     for decrypting passwords such as your cvs user id and cvs      # -->
+<!-- #     password along with any other user ids and passwords that are  # -->
+<!-- #     used.  The ant-jasypt-encryptor-XXX.jar is not included in the # -->
+<!-- #     basic ant distribution. You can obtain it from a known ant     # -->
+<!-- #     builder/co-worker via an email attachment or by asking him/her # -->
+<!-- #     where the distribution source folder is located via email. You # -->
+<!-- #     only need to add the jar file (ant-jasypt-encryptor-XXX.jar)   # -->
+<!-- #     to the lib directory underneath your ant installation. So      # -->
+<!-- #     install ant first. NOTE: If you run this build file and do not # -->
+<!-- #     have this jar file in your ant classpath then this build       # -->
+<!-- #     process will fail with a detailed error message alerting you   # -->
+<!-- #     of any instructions you may need in order for you to run a     # -->
+<!-- #     successful build.                                              # -->
+<!-- #                                                                    # -->
+<!-- # Java:                                                              # -->
+<!-- #     In addition to whatever version of the java runtime            # -->
+<!-- #     enviroment you may have (and must have to make ant work) on    # -->
+<!-- #     your system you will need a jdk (Java Development Kit)         # -->
+<!-- #     installed on your system so that the *.java files can be       # -->
+<!-- #     compiled. Currently this must be version 1.8. Install this     # -->
+<!-- #     as you normally would and then MAKE SURE that your 'JAVA_HOME' # -->
+<!-- #     environment variable is set correctly, pointing to a jdk1.8    # -->
+<!-- #     installation. Also MAKE SURE that you have the value           # -->
+<!-- #     %JAVA_HOME%\bin inside of your 'Path' environment variable     # -->
+<!-- #     value list. If you do not have these environment variables     # -->
+<!-- #     you must create them and set their values. A shortcut to       # -->
+<!-- #     modify these values is:                                        # -->
+<!-- #                                                                    # -->
+<!-- #     Step 1) WINDOWS KEY + Pause/Break (keyboard shortcut)          # -->
+<!-- #     Step 2) Advanced System Properties (link or tab within window) # -->
+<!-- #     Step 3) Environment Variables... (button)                      # -->
+<!-- #                                                                    # -->
+<!-- #     An example of the environment variables explained is below:    # -->
+<!-- #                                                                    # -->
+<!-- #     EXAMPLES:                                                      # -->
+<!-- #            Variable name:  JAVA_HOME                               # -->
+<!-- #           Variable value:  C:\Program Files\Java\jdk1.8.0_60       # -->
+<!-- #                                                                    # -->
+<!-- #            Variable name:  Path                                    # -->
+<!-- #           Variable value:  %JAVA_HOME%\bin;C:\Program Files\CVSNT; # -->
+<!-- #                                                                    # -->
+<!-- #     You can get the Development Kit at http:\\java.sun.com         # -->
+<!-- #                                                                    # -->
+<!-- # Java Memory:                                                       # -->
+<!-- #     If you receive a java.lang.OutOfMemoryError: Java heap space   # -->
+<!-- #     you may need to set the ANT_OPTS environment variable for      # -->
+<!-- #     boosting the java vitual machine memory. You should only need  # -->
+<!-- #     to set it up to the following values:  -Xms128m -Xmx256m       # -->
+<!-- #                                                                    # -->
+<!-- #     EXAMPLE:                                                       # -->
+<!-- #               Variable name:  ANT_OPTS                             # -->
+<!-- #              Variable value:  -Xms128m -Xmx256m                    # -->
+<!-- #                                                                    # -->
+<!-- # CVSnt:                                                             # -->
+<!-- #     As we use the SDC cvs server here (moforge.intra.state.mo.us)  # -->
+<!-- #     which is running cvsnt for the cvs server and they run it in   # -->
+<!-- #     ext. ssh protocol you will need CVSnt version 2.5.03.2382.     # -->
+<!-- #                                                                    # -->
+<!-- # Libraries:                                                         # -->
+<!-- #     Mail.jar                                                       # -->
+<!-- #     Activation.jar                                                 # -->
+<!-- #     commons-net-XXX.jar                                            # -->
+<!-- #     jakarta-oro-XXX.jar                                            # -->
+<!-- #                                                                    # -->
+<!-- ###################################################################### -->
+
+<project name="ANT Trust Certficate Task Jar Build" default="run" basedir=".">
+	<description>
+			Build file to generate the ANT Trust Certficate Task jar.
+		-clean
+		-get from cvs
+		-tag in cvs
+		-prep enviromental files
+		-generate xDoclet Stuff
+		-javaDocs
+		-compile projects
+		-jar
+		-copy
+		-email
+	</description>
+
+	<taskdef resource="net/sf/antcontrib/antlib.xml"/>
+
+	<target name="run.dis2"
+								description="Primary Run to call targets in order"	depends="start, init, clean, cvs.get, prep.env, java.compile, javadoc, checkstyle, tasktag, java.jar, copy, email, deletesrc, stop"/>
+	<target name="run"
+								description="Default Run"							depends="start, init, clean, cvs.get, prep.env, java.compile, javadoc, checkstyle, tasktag, java.jar, copy, email, stop"/>
+	<target name="run.dis"
+								description="Custom Run to call targets specified"	depends="start, init, clean, cvs.get, prep.env, java.compile, javadoc, checkstyle, tasktag, stop"/>
+
+<!-- ###################################################################### -->
+<!-- # Section:Start and Stop                                             # -->
+<!-- #     Description: Start and stop the log                            # -->
+<!-- #                                                                    # -->
+<!-- ###################################################################### -->
+
+	<!-- =================================================================== -->
+	<!-- Start the Log                                                       -->
+	<!-- =================================================================== -->
+	<target name="start" description="starts build.log">
+		<record name="${basedir}/build.log" action="start" loglevel="verbose" append="true"/>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- Stop the Log                                                        -->
+	<!-- =================================================================== -->
+	<target name="stop" depends="start" description="stops and changes name of build.log">
+	<echo>+---------------------------------------------------+</echo>
+	<echo>|                                                   |</echo>
+	<echo>| S T O P    B U I L D    L O G                     |</echo>
+	<echo>|                                                   |</echo>
+	<echo>+---------------------------------------------------+</echo>
+		<record name="${basedir}/build.log" action="stop" loglevel="verbose"/>
+		<move file="${basedir}/build.log" tofile="${basedir}/build.${application.name}_${build.number}.log"/>
+	</target>
+
+<!-- ###################################################################### -->
+<!-- # Section:Initialization                                             # -->
+<!-- #     Description: This section is used to establish most properties # -->
+<!-- #                  especially properties related to running the      # -->
+<!-- #                  environment (where compilers are and etc) and to  # -->
+<!-- #                  rarely changed switch properties.                 # -->
+<!-- #                                                                    # -->
+<!-- #                  It is preferable to put all properties into this  # -->
+<!-- #                  section even though they may be used in only one  # -->
+<!-- #                  discrete section of the build script. This will   # -->
+<!-- #                  be adjusted for once the script has been          # -->
+<!-- #                  separated out into subscripts. This way the       # -->
+<!-- #                  properties can be more easily located             # -->
+<!-- #                                                                    # -->
+<!-- #                  In some places and in some cases the fact that    # -->
+<!-- #                  any one property of a given name can only be      # -->
+<!-- #                  set once and after that it is immutable is used   # -->
+<!-- #                  to our advantage at times. For instance for the   # -->
+<!-- #                  cvs calls we have two server names in place       # -->
+<!-- #                  the first one will be the value set and the       # -->
+<!-- #                  second one will be ignored. In this way you       # -->
+<!-- #                  don't really need to comment out a particular     # -->
+<!-- #                  property value to have one for test and one       # -->
+<!-- #                  for production. You only have to switch which     # -->
+<!-- #                  one comes up first in the script and that value   # -->
+<!-- #                  is the one instantiated                           # -->
+<!-- ###################################################################### -->
+
+	<!-- =================================================================== -->
+	<!-- Initialize the Properties                                           -->
+	<!-- =================================================================== -->
+	<target name="init" depends="validateAntVersion" description="initialize properties for build">
+		<echo>+---------------------------------------------------+</echo>
+		<echo>|                                                   |</echo>
+		<echo>| I N I T I A L I Z E    B U I L D                  |</echo>
+		<echo>|                                                   |</echo>
+		<echo>+---------------------------------------------------+</echo>
+			<echo>+---------------------------------------------------+</echo>
+			<echo>|Initialize some general properties for the build   |</echo>
+			<echo>+---------------------------------------------------+</echo>
+			<tstamp />
+			<property name="src" value="src" />
+			<property file="build.properties"/>
+			<buildnumber file="build.buildnumber"/>
+			<property environment="env"/>
+
+			<echo>+----------------------------------------------------------------------------------------------+</echo>
+			<echo>|Initialize Ant Jasypt Password Encryptor ANT task for encrypting passwords during this build  |</echo>
+			<echo>+----------------------------------------------------------------------------------------------+</echo>
+			<typedef name="jasyptencryptor" classname="com.omo.tools.ant.JasyptPasswordEncryptorTask" onerror="report" />
+
+			<echo>Making sure that the class that implements the JasyptPasswordEncryptorTask class exists</echo>
+			<if>
+				<and>
+					<not><typefound name="jasyptencryptor" /></not>
+					<equals arg1="${GENERATE.javadocs.only}" arg2="false" />
+				</and>
+				<then>
+					<echo>+---------------------------------------------------------------------------------------------------+</echo>
+					<echo>|                                                                                                   |</echo>
+					<echo>|   J A S Y P T   E N C R Y P T O R   T A S K   C L A S S   C O U L D   N O T   B E   F O U N D     |</echo>
+					<echo>|                                                                                                   |</echo>
+					<echo>+---------------------------------------------------------------------------------------------------+</echo>
+					<echo>
+						Class Not Found:  com.omo.tools.ant.JasyptPasswordEncryptorTask
+
+						If you see this error message then you will need to obtain a copy of the
+						ant-jasypt-encryptor-XXX.jar. You can obtain this jar from a known ant user
+						or ask where the distribution location of this jar is located. Once you have
+						obtained this jar then you only need to add the jar file
+						(ant-jasypt-encryptor-XXX.jar) to the lib directory underneath your
+						ant installation.
+
+						FOR EXAMPLE:  C:\apache-ant-1.9.4\lib
+									  (this directory is where you should place the
+									   ant-jasypt-encryptor-XXX.jar)
+
+						Passwords need to be encrypted during this build process!!
+					</echo>
+					<fail message="Class Not Found:  com.omo.tools.ant.JasyptPasswordEncryptorTask. Passwords need to be encrypted during this build process!"/>
+				</then>
+				<elseif>
+					<resourcecount count="1" when="gt">
+						<fileset dir="${env.ANT_HOME}/lib" casesensitive="yes">
+							<include name="*jasypt-encryptor*.jar"/>
+							<include name="jasypt-encryptor*.jar"/>
+						</fileset>
+					</resourcecount>
+					<then>
+						<echo>+-------------------------------------------------------------------------------------------------------------------+</echo>
+						<echo>|                                                                                                                   |</echo>
+						<echo>|   Y O U R   A N T   H O M E   C O N T A I N S   T W O   O R   M O R E   J A S Y P T   E N C R Y P T O R   J A R S |</echo>
+						<echo>|                                                                                                                   |</echo>
+						<echo>+-------------------------------------------------------------------------------------------------------------------+</echo>
+						<echo>
+							Your ${env.ANT_HOME}\lib directory contains 2 ant-jasypt-encryptor jar files!!!!
+
+							You need to remove one of these jars from within your ${env.ANT_HOME}\lib directory
+							because having 2 will cause unexpected results to occur. Make sure to remove the oldest
+							one keeping the newest version.
+
+							FOR EXAMPLE:  C:\apache-ant-1.9.4\lib
+										  (this directory is where you should remove the
+										  oldest ant-jasypt-encryptor-1.0.jar) and
+										  replace with the newest ant-jasypt-encryptor-1.1.jar
+
+							Passwords need to be encrypted/decrypted during this build process!!
+						</echo>
+						<fail message="Your ${env.ANT_HOME}/lib directory contains 2 ant-jasypt-encryptor jar files!!  You must remove one of the ant-jasypt-encryptor jars because containing 2 will cause unexpected results!!"/>
+					</then>
+				</elseif>
+			</if>
+
+			<!-- ############################################################################## -->
+			<!-- # NOTE: (note for the following two tasks (propertyregex and condition)      # -->
+			<!-- # It uses a regular expression to test the CVS.BranchNameOrTagName value for # -->
+			<!-- # being a tag name and if so isolate the branch name from the tag name for   # -->
+			<!-- # setting it to the branchName property value. If CVS.BranchNameOrTagName    # -->
+			<!-- # does not match the regular expression then it must be a branch (or HEAD)   # -->
+			<!-- # so then just set branch (or HEAD) name to the branchName property value.   # -->
+			<!-- # The reason this is done is for setting up the cvs.newTagName to be in      # -->
+			<!-- # the following format:                                                      # -->
+			<!-- #                                                                            # -->
+			<!-- #            EXAMPLE: AntBuildTagBranchName201304161105                      # -->
+			<!-- #                                                                            # -->
+			<!-- # and also for committing the build.buildnumber during the build process     # -->
+			<!-- # because you need the branch (or HEAD) name not the tag name for committing # -->
+			<!-- # the build.buildnumber. The condition task makes sure that the branchName   # -->
+			<!-- # value does not contain any tag related characters in it and if it does     # -->
+			<!-- # then set it to a default value of AntBuildTag${DTSTAMP}${TSTAMP}.          # -->
+			<!-- ############################################################################## -->
+			<propertyregex property="branchName" input="${CVS.BranchNameOrTagName}" regexp="^(AntBuildTag)(.*)([0-9]{12})$" select="\2" casesensitive="false" defaultValue="${CVS.BranchNameOrTagName}"/>
+			<condition property="cvs.newTagName" value="AntBuildTag${branchName}${DSTAMP}${TSTAMP}" else="AntBuildTag${DSTAMP}${TSTAMP}">
+				<not><matches string="${branchName}" pattern="(AntBuildTag|.*[0-9]{12})"/></not>
+			</condition>
+
+			<!-- ####################################################################### -->
+			<!-- # Section:Replaceable Values                                          # -->
+			<!-- #     Description: The ten properties below are the only properties   # -->
+			<!-- #         that should need to be changed for normal operation. The    # -->
+			<!-- #         values of the properties are already set to the typically   # -->
+			<!-- #         used values during this build process.                      # -->
+			<!-- #                                                                     # -->
+			<!-- #         SWITCH PROPERTIES:                                          # -->
+			<!-- #            cvs.makeNewTag ([true | false] Set this property to true # -->
+			<!-- #                           if you want the build process to tag the  # -->
+			<!-- #                           branch or HEAD for versioning in cvs.     # -->
+			<!-- #            cvs.checkoutFromTagOnly ([true | false] Set this         # -->
+			<!-- #                           property to true if you want the build    # -->
+			<!-- #                           process to only be able to checkout from  # -->
+			<!-- #                           a tag. Set to false if you want to build  # -->
+			<!-- #                           from a branch or HEAD.                    # -->
+			<!-- #            mail.send ([true | false] Set this property to true to   # -->
+			<!-- #                      send an email to inform a successful build of  # -->
+			<!-- #                      this application.)                             # -->
+			<!-- #            cvs.generateChangeLog ([true | false] Set this property  # -->
+			<!-- #                                  to true to run a cvschangelog task # -->
+			<!-- #                                  that will look for any changes to  # -->
+			<!-- #                                  the code that was checked out. If  # -->
+			<!-- #                                  changes were found a generated     # -->
+			<!-- #                                  html report will be made and       # -->
+			<!-- #                                  attached to the email.)            # -->
+			<!-- #            cvs.changeLogDaysInPast ([number of days in past] Set    # -->
+			<!-- #                                    this property to the number of   # -->
+			<!-- #                                    days in past you want the        # -->
+			<!-- #                                    cvschangelog task to go to find  # -->
+			<!-- #                                    changes to the code that was     # -->
+			<!-- #                                    checked out.)                    # -->
+			<!-- #            checkstyle.generateReport ([true | false] Set this       # -->
+			<!-- #                                      property to true to check to   # -->
+			<!-- #                                      see if any *.java files        # -->
+			<!-- #                                      contain checkstyle violations, # -->
+			<!-- #                                      if so then an html report will # -->
+			<!-- #                                      be generated and attached to   # -->
+			<!-- #                                      the email.)                    # -->
+			<!-- #            tasktags.generateReport ([true | false] Set this         # -->
+			<!-- #                                      property to true to check to   # -->
+			<!-- #                                      see if any source code files   # -->
+			<!-- #                                      contain any task tags,         # -->
+			<!-- #                                      if so then an html report will # -->
+			<!-- #                                      be generated and attached to   # -->
+			<!-- #                                      the email.)                    # -->
+			<!-- #            generate.javadocs ([true | false] Set this to true to    # -->
+			<!-- #                              generate javadocs for the java source  # -->
+			<!-- #                              code during the build process for this # -->
+			<!-- #                              application.)                          # -->
+			<!-- #            include.sourceCode ([true | false] Set this to true to   # -->
+			<!-- #                              include the source code (*.java files) # -->
+			<!-- #                              as part of the final packaged archive  # -->
+			<!-- #                              file(s) (war/ear/jar).                 # -->
+			<!-- #            update.distributionJar ([true | false] Set this to true  # -->
+			<!-- #                              to attempt a cvs commit process which  # -->
+			<!-- #                              includes updating the jar located      # -->
+			<!-- #                              within the DISTRIBUTION directory in   # -->
+			<!-- #                              cvs per this jars cvs module name.     # -->
+			<!-- #                              NOTE: This will only affect the jar    # -->
+			<!-- #                              located where the code was pulled      # -->
+			<!-- #                              from.                                  # -->
+			<!-- ####################################################################### -->
+			<property name="cvs.makeNewTag" value="true" description="true | false" />
+			<property name="cvs.checkoutFromTagOnly" value="true" description="true | false" />
+			<property name="mail.send" value="true" description="true | false" />
+			<property name="cvs.generateChangeLog" value="true" description="true | false" />
+			<property name="cvs.changeLogDaysInPast" value="20" description="number of days in past [default = 20]" />
+			<property name="checkstyle.generateReport" value="true" description="true | false" />
+			<property name="tasktags.generateReport" value="true" description="true | false" />
+			<property name="generate.javadocs" value="true" description="true | false" /> <!-- javadoc switch -->
+			<property name="include.sourceCode" value="true" description="true | false" />
+			<property name="update.distributionJar" value="true" description="true | false" />
+
+			<available file="${env.USERPROFILE}\build.local.properties" type="file" property="available.localProperties" />
+			<if>
+				<equals arg1="${available.localProperties}" arg2="true" />
+				<then>
+					<echo>+---------------------------------------------------+</echo>
+					<echo>|Loading Local Properties file                      |</echo>
+					<echo>+---------------------------------------------------+</echo>
+					<property file="${env.USERPROFILE}\build.local.properties"/>
+					<property prefix="template" file="build.local.properties"/>
+
+					<echo>+---------------------------------------------------+</echo>
+					<echo>|Check version of build.local.properties            |</echo>
+					<echo>+---------------------------------------------------+</echo>
+					<if>
+						<not><equals arg1="${build.local.properties.version}" arg2="${template.build.local.properties.version}"/></not>
+						<then>
+							<echo>+---------------------------------------------------+</echo>
+							<echo>|Local Properties Incorrect version                 |</echo>
+							<echo>+---------------------------------------------------+</echo>
+							<echo>
+								${line.separator}${line.separator}${line.separator}
+								Your build.local.properties file version does not match the
+								template one inside the build directory.
+								(template available from the same place this script came from)
+								Copy it and place it in your user home directory.
+								You must fill it out. (see the template for details)
+								${line.separator}${line.separator}${line.separator}
+							</echo>
+							<fail message="Local Properties Incorrect version."/>
+						</then>
+					</if>
+				</then>
+				<else>
+					<echo>+---------------------------------------------------+</echo>
+					<echo>|Local Properties Unavailable!!!!                   |</echo>
+					<echo>+---------------------------------------------------+</echo>
+					<echo>
+						${line.separator}${line.separator}${line.separator}
+						You must fill out the build.local.properties file
+						(template available from the same place this script came from)
+						and place it in your user home directory.
+						see the template for details.
+						${line.separator}${line.separator}${line.separator}
+					</echo>
+					<fail message="Local Properties Unavailable!!!!"/>
+				</else>
+			</if>
+
+			<echo>+-----------------------------------------------------------------------------------------------+</echo>
+			<echo>|Running compiler level checks to make sure that this application gets compiled using Java v1.8 |</echo>
+			<echo>+-----------------------------------------------------------------------------------------------+</echo>
+				<echo>*********************************************************************************</echo>
+				<echo>* Here we make sure that the java version being used is 1.8. We check this by   *</echo>
+				<echo>* checking for the value set to the 'JAVA_HOME' environment variable which      *</echo>
+				<echo>* should be '1.8' per the way the installed version of the JDK should be. The   *</echo>
+				<echo>* next check is the 'java.version' that is being set which if it is not then    *</echo>
+				<echo>* most likely you do not have the value '%JAVA_HOME%\bin' in the list of paths  *</echo>
+				<echo>* of your 'Path' environment variable (this should be located at the beginning  *</echo>
+				<echo>* of the 'Path' value list). The final check is to make sure that the Java Home *</echo>
+				<echo>* directory exists. If 1.8 is not found within these values then it will fail   *</echo>
+				<echo>* this test with a detailed error message.                                      *</echo>
+				<echo>*********************************************************************************</echo>
+				<echo>env.JAVA_HOME      = ${env.JAVA_HOME}</echo>
+				<echo>java.version       = ${java.version}</echo>
+				<if>
+					<not>
+						<and>
+							<matches string="${env.JAVA_HOME}" pattern=".*\\.*1\.8.*"/>
+							<matches string="${java.version}" pattern="1\.8.*"/>
+							<available file="${env.JAVA_HOME}" type="dir" />
+						</and>
+					</not>
+					<then>
+						<echo>
+							Java Environment Settings Are Not Configured Correctly. This build process must be
+							configured to use Java 1.8.  Make sure to check the following 3 settings below:
+
+								***********************************************************************
+								* Shortcut to System properties (where environment variables are set) *
+								* Step 1) WINDOWS KEY + Pause/Break (keyboard shortcut)               *
+								* Step 2) Advanced System Properties (link or tab within window)      *
+								* Step 3) Environment Variables... (button)                           *
+								***********************************************************************
+
+								1) Make sure that your environment variable JAVA_HOME value is set to point to a
+								   jdk1.8v directory.
+
+								   EXAMPLE:
+								              Variable name:  JAVA_HOME
+								             Variable value:  C:\Program Files\Java\jdk1.8.0_60
+
+								2) make sure that the value of the environment variable 'Path' includes
+								   the following:  %JAVA_HOME%\bin. Also make sure that this is at the
+								   beginning of the list of paths
+
+								   EXAMPLE:
+								              Variable name:  Path
+								             Variable value:  %JAVA_HOME%\bin;C:\Program Files\Text Pad 5;
+
+								3) make sure that you have an installed version of the jdk1.8 on your machine.
+
+							After making sure these settings are configured correctly then you should have a
+							successful build.
+						</echo>
+						<fail message="Java 1.8 is not configured correctly for this build!! Look at the build.log for more information on what may be the problem."/>
+					</then>
+					<else>
+						<echo>Java Environment Settings Are Configured Correctly. Set java8.compiler.home property. Build process will now begin.</echo>
+						<property name="java8.compiler.home" value="${env.JAVA_HOME}" description="we are setting the java version that this code is going to be compiled in here based off of the environment variable JAVA_HOME due to this"/>
+					</else>
+				</if>
+
+			<echo>+------------------------------------------------------------+</echo>
+			<echo>|Run LoadFiles to get some arrays and CVS related properties |</echo>
+			<echo>+------------------------------------------------------------+</echo>
+			<if>
+				<not><equals arg1="${env.USERDOMAIN}" arg2="ISU"/></not>
+				<then>
+					<echo>Checking to see if you are an authorized ANT Builder of the ADS/BDS domain.</echo>
+					<propertyregex property="authorizedUserId" input="${env.USERPROFILE}" regexp="^(.*\\.*\\)(.*)$" select="\2" casesensitive="false" defaultValue="" />
+					<echo>Verifing that ${authorizedUserId} is an authorized User.</echo>
+					<if>
+						<matches pattern="^(lowed|DTW000is|backur|ponnal|pennm)$" string="${authorizedUserId}" casesensitive="false" />
+						<then>
+							<echo>You are authorized to run this build process.</echo>
+						</then>
+						<else>
+							<echo>+---------------------------------------------------------+</echo>
+							<echo>|You Are Not Authorized To Execute This Build Process!!!! |</echo>
+							<echo>+---------------------------------------------------------+</echo>
+							<echo>
+								${line.separator}${line.separator}${line.separator}
+								Please notify a known ANT Developer/Builder to execute this process for
+								you. Thank you and have a nice day.
+								${line.separator}${line.separator}${line.separator}
+							</echo>
+							<fail message="YOU ARE NOT AUTHORIZED TO EXECUTE ANY BUILDS WITHIN THE ${env.USERDOMAIN} DOMAIN."/>
+						</else>
+					</if>
+
+					<echo>Setting CVS Values for DOC</echo>
+					<property name="cvs.repositoryPrefix" value="/data/cvs/doc"/>
+					<property name="cvs.repositoryName" value="docscripts"/>
+					<property name="cvs.mode" value="ssh"/>
+					<property name="cvs.server" value="moforge.state.mo.us"/>
+
+					<echo>Setting Configuration Files CVS Repository Name for DOC</echo>
+					<property name="cvs.configFilesRepositoryName" value="docscripts"/>
+
+					<echo>Setting Mail values for DOC</echo>
+					<property name="mail.from" value="buildScript@docapp.mo.gov"/>
+					<property name="mail.mailhost" value="momail.mo.gov"/>
+
+					<echo>Setting JAR Archive Location for DOC</echo>
+					<property name="jar.archiveLocation" value="\\docsvr.state.mo.us\ITSD-DOC\AppDevTech\historicalEars"/>
+				</then>
+				<else>
+
+					<echo>Setting CVS Values for JCCC</echo>
+					<property name="cvs.repositoryPrefix" value="/repositories"/>
+					<property name="cvs.repositoryName" value="AntProjects"/>
+					<property name="cvs.mode" value="pserver"/>
+					<property name="cvs.server" value="isucvssvr"/>
+
+					<echo>Setting Configuration Files CVS Repository Name for JCCC</echo>
+					<property name="cvs.configFilesRepositoryName" value="IsuScripts"/>
+
+					<echo>Setting Mail values for JCCC</echo>
+					<property name="mail.from" value="buildScript@isu.net"/>
+					<property name="mail.mailhost" value="zimbra.isu.net"/>
+
+					<echo>Setting JAR Archive Location for JCCC</echo>
+					<property name="jar.archiveLocation" value="\\isuwsphere2svr\SharedJar\antJars"/>
+				</else>
+			</if>
+
+			<echo>Loading CVS Module List from build.module.list file</echo>
+			<loadfile property="cvsModuleList" srcFile="build.module.list">
+				<filterchain> <!-- this filter outputs lines delimited by "," -->
+					<striplinecomments>
+						<comment value="#"/>
+						<comment value="--"/>
+						<comment value="REM "/>
+						<comment value="rem "/>
+						<comment value="//"/>
+					</striplinecomments>
+					<tokenfilter delimoutput=","/>
+				</filterchain>
+			</loadfile>
+
+			<echo>+----------------------------------------------------------------+</echo>
+			<echo>|Decrypt property values used for accessing resouces             |</echo>
+			<echo>+----------------------------------------------------------------+</echo>
+			<jasyptencryptor decrypt="true" property="CVS.user" encryptorPasswordPhrase="docsecretpassword" password="${CVS.user}" verbose="true" />
+			<jasyptencryptor decrypt="true" property="CVS.pass" encryptorPasswordPhrase="docsecretpassword" password="${CVS.pass}" verbose="true" />
+
+			<echo>+----------------------------------------------------------------+</echo>
+			<echo>|Initialize cvs application files repository location properties |</echo>
+			<echo>+----------------------------------------------------------------+</echo>
+			<property name="cvsRepository" value="${cvs.repositoryPrefix}/${cvs.repositoryName}"/>
+			<property name="cvsRoot" value=":${cvs.mode}:${CVS.user}:${CVS.pass}@${cvs.server}:${cvsRepository}" />
+
+			<echo>+------------------------------------------------------------------+</echo>
+			<echo>|Initialize cvs configuration files repository location properties |</echo>
+			<echo>+------------------------------------------------------------------+</echo>
+			<property name="cvsConfigFilesRepository" value="${cvs.repositoryPrefix}/${cvs.configFilesRepositoryName}"/>
+			<property name="cvsConfigFilesRoot" value=":${cvs.mode}:${CVS.user}:${CVS.pass}@${cvs.server}:${cvsConfigFilesRepository}" />
+			<property name="cvsConfigFilesBranch" value="HEAD" />
+
+			<echo>+---------------------------------------------------+</echo>
+			<echo>|Initialize some environmental properties           |</echo>
+			<echo>+---------------------------------------------------+</echo>
+			<available file="${jar.archiveLocation}" type="dir" property="available.jar.archive.location" />
+
+			<condition property="skip.target">
+				<istrue value="${GENERATE.javadocs.only}"/>
+			</condition>
+
+			<condition property="mail.cvstagname" value="${cvs.newTagName}" else="NO TAG WAS CREATED">
+				<and>
+					<istrue value="${cvs.makeNewTag}"/>
+					<not><matches string="${CVS.BranchNameOrTagName}" pattern="(AntBuildTag.*|AntCheckoutFor.*)"/></not>
+				</and>
+			</condition>
+
+			<condition property="manifest.cvstagname" value="${cvs.newTagName}" else="">
+				<and>
+					<istrue value="${cvs.makeNewTag}"/>
+					<not><matches string="${CVS.BranchNameOrTagName}" pattern="(AntBuildTag.*|AntCheckoutFor.*)"/></not>
+				</and>
+			</condition>
+
+			<fail message="This build is configured to only build from a tag and currently you are trying to build from something other than the following pattern of tags (AntBuildTag.*|AntCheckoutFor.*).  CVS.BranchNameOrTagName=${CVS.BranchNameOrTagName}">
+				<condition>
+					<and>
+						<not><equals arg1="${env.USERDOMAIN}" arg2="ISU"/></not>
+						<istrue value="${cvs.checkoutFromTagOnly}"/>
+						<not><matches string="${CVS.BranchNameOrTagName}" pattern="(AntBuildTag.*|AntCheckoutFor.*)"/></not>
+					</and>
+				</condition>
+			</fail>
+
+			<echo>+---------------------------------------------------------------------------------------------------------------------------------+</echo>
+			<echo>|Initialize property for the name of the module containing the build directory. This is used in the cvs.commitBuildnumber target. |</echo>
+			<echo>+---------------------------------------------------------------------------------------------------------------------------------+</echo>
+			<property name="moduleName" value="AntTrustCertTask"/>
+
+			<echo>+---------------------------------------------------+</echo>
+			<echo>|Initialize some app running envirnoment stuff      |</echo>
+			<echo>+---------------------------------------------------+</echo>
+			<property name="application.name" value="ant-trust-certificate-${JAR.VersionNumber}"/>
+			<property name="jar.name" value="${application.name}.jar"/>
+
+			<echo>+------------------------------------------------------------------------------------------------------------+</echo>
+			<echo>|Initialize user.id property here as a fail-safe in case a system error occurs and system variables are lost |</echo>
+			<echo>+------------------------------------------------------------------------------------------------------------+</echo>
+			<if>
+				<equals arg1="${env.USERNAME}" arg2="SYSTEM" casesensitive="false" trim="true"/>
+				<then>
+					<echo>Extracting user id from within the env.USERPROFILE property using a regular expression.</echo>
+					<propertyregex property="user.id" input="${env.USERPROFILE}" regexp="^(.*\\.*\\)(.*)$" select="\2" casesensitive="false" />
+				</then>
+				<else>
+					<property name="user.id" value="${env.USERNAME}" description="property set based off of a system variable here" />
+				</else>
+			</if>
+
+			<echo>+---------------------------------------------------------------------------------------+</echo>
+			<echo>|Initialize property filesToExclude based upon the value of include.sourceCode property |</echo>
+			<echo>+---------------------------------------------------------------------------------------+</echo>
+			<if>
+				<istrue value="${include.sourceCode}"/>
+				<then>
+					<echo>include.sourceCode equals ${include.sourceCode} so the *.java files (source files) will be included in this build</echo>
+					<property name="filesToExclude" value=""/>
+				</then>
+				<else>
+					<echo>include.sourceCode equals ${include.sourceCode} so the *.java files (source files) are NOT to be included in this build</echo>
+					<property name="filesToExclude" value="**/*.java"/>
+				</else>
+			</if>
+
+			<if>
+				<not><equals arg1="${env.USERDOMAIN}" arg2="ISU"/></not>
+				<then>
+					<echo>+----------------------------------------------+</echo>
+					<echo>| Checking to see if updated email list exists |</echo>
+					<echo>+----------------------------------------------+</echo>
+					<if>
+						<available file="\\docsvr.state.mo.us\ITSD-DOC\AppDevTech\EmailProperties\${application.name}.all.build.email.properties" type="file" />
+						<then>
+							<property file="\\docsvr.state.mo.us\ITSD-DOC\AppDevTech\EmailProperties\${application.name}.all.build.email.properties" />
+							<property name="emailListAvailableMessage" value=""/>
+						</then>
+						<else>
+							<property name="emailList" value="OA.ITSD.AppDev.DOC@oa.mo.gov" />
+							<property name="emailListAvailableMessage" value="&lt;p&gt;&lt;font color=&quot;red&quot;&gt;The shared Email list ${application.name}.all.build.email.properties was not available. OA.ITSD.AppDev.DOC@oa.mo.gov used as default.&lt;/font&gt;&lt;/p&gt;"/>
+						</else>
+					</if>
+				</then>
+				<else>
+					<echo>Loading Email Recipient List from build.email.jccc.list file</echo>
+					<loadfile property="emailList" srcFile="build.email.jccc.list">
+						<filterchain> <!-- this filter outputs lines delimited by "," -->
+							<striplinecomments>
+								<comment value="#"/>
+								<comment value="--"/>
+								<comment value="REM "/>
+								<comment value="rem "/>
+								<comment value="//"/>
+							</striplinecomments>
+							<tokenfilter delimoutput=","/>
+						</filterchain>
+					</loadfile>
+					<property name="emailListAvailableMessage" value=""/>
+				</else>
+			</if>
+
+			<echo>+---------------------------------------------------+</echo>
+			<echo>|Print a list of all properties and their values    |</echo>
+			<echo>+---------------------------------------------------+</echo>
+			<echoproperties/>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- Clean and or establish the temporary directories                    -->
+	<!-- =================================================================== -->
+	<target name="clean" description="clean and or establish the temporary directories">
+		<!-- set property saying whether src exists or not -->
+		<available file="${src}" type="dir" property="available.srcDir" />
+		<if>
+			<equals arg1="${available.srcDir}" arg2="true" />
+			<then>
+				<echo>Directory src does exist, cleaning it out</echo>
+				<delete includeemptydirs="true" verbose="true">
+					<fileset dir="${src}" includes="**/*" defaultexcludes="false"/>
+				</delete>
+				<mkdir dir="${src}" />
+			</then>
+			<else>
+				<echo>Directory src does not exist, creating it</echo>
+				<mkdir dir="${src}" />
+			</else>
+		</if>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- Validate Currently Running ANT Version                              -->
+	<!-- =================================================================== -->
+	<target name="validateAntVersion" description="validates the ant version that this script is executed under">
+		<echo>+-----------------------------------------------------------------------------------------------------+</echo>
+		<echo>|                                                                                                     |</echo>
+		<echo>| V A L I D A T I N G   A N T   V E R S I O N   B E F O R E   B U I L D   P R O C E S S   S T A R T S |</echo>
+		<echo>|                                                                                                     |</echo>
+		<echo>+-----------------------------------------------------------------------------------------------------+</echo>
+		<if>
+			<not><antversion atleast="1.9.4"/></not>
+			<then>
+				<echo>
+					In order to successfully execute this build process you will need to obtain and install
+					ANT version 1.9.4 or greater.  Please ask a known ANT developer/user where you can obtain
+					a copy of the required version of ANT.  Once obtained there are only a few things you
+					will be required to configure on your machine.
+
+					1) Unzip the newer version of ANT to the same directory as where your other version
+					   of ANT is located.
+
+					2) Make sure that the value of the environment variable 'ANT_HOME' is
+					   changed to reflect the newer version of ANT.  Example follows:
+
+						***********************************************************************
+						* Shortcut to System properties (where environment variables are set) *
+						* Step 1) WINDOWS KEY + Pause/Break (keyboard shortcut)               *
+						* Step 2) Advanced System Properties (link or tab within window)      *
+						* Step 3) Environment Variables... (button)                           *
+						***********************************************************************
+
+						EXAMPLE:
+								  Variable name:  ANT_HOME
+								 Variable value:  C:\apache-ant-1.9.4
+
+					After making sure these settings are configured correctly then you should have a
+					successful build.
+				</echo>
+				<fail message="The version of ANT you are running does not meet the version needed to run this script which is at least 1.9.4."/>
+			</then>
+		</if>
+	</target>
+
+<!-- ###################################################################### -->
+<!-- # Section:CVS                                                        # -->
+<!-- #     Description: Handling all CVS Functions with a lot of if's     # -->
+<!-- #                  and or's.                                         # -->
+<!-- #                     Checkout the code. (runs cvs checkout command  # -->
+<!-- #                                         to checkout the module(s)) # -->
+<!-- #                     Post test (checks to make sure build scripts   # -->
+<!-- #                                are up-to-date. These are the ones  # -->
+<!-- #                                that are checked:                   # -->
+<!-- #                                   build.xml                        # -->
+<!-- #                                   build.email.jccc.list            # -->
+<!-- #                                   build.email.doc.list             # -->
+<!-- #                                   build.module.list)               # -->
+<!-- #                     Check out config. files (checks out files that # -->
+<!-- #                                              this build needs to   # -->
+<!-- #                                              use for configuring   # -->
+<!-- #                                              any custom tasks      # -->
+<!-- #                                              that this script      # -->
+<!-- #                                              uses.)                # -->
+<!-- #                     Get branch name by tag (if code is pulled from # -->
+<!-- #                                             tag, this target will  # -->
+<!-- #                                             run cvs log command to # -->
+<!-- #                                             output metadata that   # -->
+<!-- #                                             is used for finding    # -->
+<!-- #                                             the related source cvs # -->
+<!-- #                                             branch.)               # -->
+<!-- #                     Commit build.buildnumber file                  # -->
+<!-- #                           (commits the build number back into      # -->
+<!-- #                            branch [or HEAD] that we are pulling    # -->
+<!-- #                            this code from even if this happens to  # -->
+<!-- #                            be a tag this section attempts to find  # -->
+<!-- #                            out the related branch and will commit  # -->
+<!-- #                            the build.buildnumber to it.)           # -->
+<!-- #                     Make a new tag (tag branch for versioning)     # -->
+<!-- #                     Generate a Tagdiff (generates a tag difference # -->
+<!-- #                                         report based off of        # -->
+<!-- #                                         related tag name that you  # -->
+<!-- #                                         are required to set inside # -->
+<!-- #                                         of the build.properties.)  # -->
+<!-- #                     Generate a Change Log (generates a changelog   # -->
+<!-- #                                            report of all the       # -->
+<!-- #                                            changes found in the    # -->
+<!-- #                                            branch or HEAD that     # -->
+<!-- #                                            this code was pulled    # -->
+<!-- #                                            from)                   # -->
+<!-- #                     Code Clean up (This throws away junk and       # -->
+<!-- #                                     generated code that others     # -->
+<!-- #                                     may have commited)             # -->
+<!-- #                     Commit new jar version number (This will       # -->
+<!-- #                                     commit new jar version number  # -->
+<!-- #                                     supplied at build time from    # -->
+<!-- #                                     inside the build.properties    # -->
+<!-- #                                     file (JAR.VersionNumber).      # -->
+<!-- #                                                                    # -->
+<!-- #                     The way that SDC CVS server works this must    # -->
+<!-- #                     use CVSnt version 2.5.03.2382                  # -->
+<!-- ###################################################################### -->
+	<target name="cvs.get" depends="cvs.checkout, cvs.posttest, cvs.checkoutConfigFiles, cvs.getBranchNameByTagName, cvs.commitBuildnumber, cvs.tag, cvs.tagDiff, cvs.changeLog, cvs.cleanup, cvs.commitJarVersionNumber"/>
+	<!-- =================================================================== -->
+	<!-- Checkout each of the modules into the src directory                 -->
+	<!-- =================================================================== -->
+	<target name="cvs.checkout" description="cvs checkout of modules">
+		<echo>+---------------------------------------------------+</echo>
+		<echo>|                                                   |</echo>
+		<echo>| C H E C K I N G    O U T     C V S    C O D E     |</echo>
+		<echo>|                                                   |</echo>
+		<echo>+---------------------------------------------------+</echo>
+		<echo Message="Beginning checkouts of all known modules to ${src} directory." />
+			<for list="${cvsModuleList}" param="checkout.pbn" trim="true">
+				<sequential>
+					<if>
+						<not>
+							<equals arg1="@{checkout.pbn}" arg2="" />
+						</not>
+						<then>
+							<echo>+---------------------------------------------------+</echo>
+							<echo>|Calling checkout for modules in list               |</echo>
+							<echo>+---------------------------------------------------+</echo>
+							<if>
+								<equals arg1="${CVS.BranchNameOrTagName}" arg2="HEAD" />
+								<then>
+									<echo>Pulling code from the HEAD so here we pull the module from the root by not setting the 'tag' attribute in the cvs task here.</echo>
+									<echo>This is necessary for being able to commit the build.buildnumber file to the head.</echo>
+									<cvs package="@{checkout.pbn}" cvsRoot="${cvsRoot}" dest="${src}" />
+								</then>
+								<else>
+									<echo>Pulling code from a branch or tag name so here we are using the tag attribute in the cvs task here.</echo>
+									<cvs package="@{checkout.pbn}" cvsRoot="${cvsRoot}" tag="${CVS.BranchNameOrTagName}" dest="${src}" />
+								</else>
+							</if>
+
+							<echo>+-------------------------------------------------------+</echo>
+							<echo>|Checking to see if module in list has been checked out |</echo>
+							<echo>+-------------------------------------------------------+</echo>
+							<echo>Check to see if the module that was supposedly checked out exists in the directory we just checked it out too.</echo>
+							<if>
+								<not><available file="${src}/@{checkout.pbn}" type="dir" /></not>
+								<then>
+									<echo>+----------------------------------------------------------------------------------------------------------------------------+</echo>
+									<echo>|                                                                                                                            |</echo>
+									<echo>| B R A N C H   N A M E,   R E P O S I T O R Y   N A M E,   O R   P A S S W O R D   M A Y   B E   I N C O R R E C T  ! ! ! ! |</echo>
+									<echo>|                                                                                                                            |</echo>
+									<echo>+----------------------------------------------------------------------------------------------------------------------------+</echo>
+									<echo>
+										${line.separator}
+										The Branch name, Repository name, or Password properties may be incorrect! Check
+										the values of each of the properties. Check the value of 'CVS.BranchNameOrTagName' in the
+										build.properties file to see if it may be incorrect. If it is incorrect then enter
+										the correct value. Find the property 'cvs.repositoryName' inside of the init target
+										of the build.xml and check its value to see if it may be incorrect. If it is incorrect
+										then enter the correct value. Also please check that your 'CVS.pass' property inside of
+										your build.local.properties file located in your user home directory has the correct
+										password. If not enter the correct password.
+
+										CVS.BranchNameOrTagName=${CVS.BranchNameOrTagName}
+										cvs.repositoryName=${cvs.repositoryName}
+
+										If the 'cvs.repositoryName' property is incorrect please inform the developer of
+										this build script so he/she can change this in the cvs repository.
+										${line.separator}
+									</echo>
+									<fail>Branch name, Repository Name, or Password may be incorrect! Please check the values of each of these properties! CVS.BranchNameOrTagName=${CVS.BranchNameOrTagName}; cvs.repositoryName=${cvs.repositoryName}</fail>
+								</then>
+							</if>
+						</then>
+					</if>
+				</sequential>
+			</for>
+	</target>
+
+	<!-- =============================================================================== -->
+	<!-- Post test the build files from cvs against local to see if files are up-to-date -->
+	<!-- =============================================================================== -->
+	<target name="cvs.posttest" description="up-to-date test of build scripts">
+		<echo>+---------------------------------------------------+</echo>
+		<echo>|                                                   |</echo>
+		<echo>|         C V S    P O S T    T E S T               |</echo>
+		<echo>|                                                   |</echo>
+		<echo>+---------------------------------------------------+</echo>
+		<echo>Setting uptodate properties for isset properties test</echo>
+		<uptodate property="isUpToDate.build.xml"
+				  targetfile="${ant.file}"
+				  srcfile="${src}/AntTrustCertTask/build/build.xml"/>
+		<echo>build.xml=${isUpToDate.build.xml}</echo>
+
+		<uptodate property="isUpToDate.build.email.jccc.list"
+				  targetfile="build.email.jccc.list"
+				  srcfile="${src}/AntTrustCertTask/build/build.email.jccc.list"/>
+		<echo>build.email.jccc.list=${isUpToDate.build.email.jccc.list}</echo>
+
+		<uptodate property="isUpToDate.build.email.doc.list"
+				  targetfile="build.email.doc.list"
+				  srcfile="${src}/AntTrustCertTask/build/build.email.doc.list"/>
+		<echo>build.email.doc.list=${isUpToDate.build.email.doc.list}</echo>
+
+		<uptodate property="isUpToDate.build.module.list"
+				  targetfile="build.module.list"
+				  srcfile="${src}/AntTrustCertTask/build/build.module.list"/>
+		<echo>build.module.list=${isUpToDate.build.module.list}</echo>
+
+		<echo>+--------------------------------------------------------------+</echo>
+		<echo>| Running isset Properties Test                                |</echo>
+		<echo>+--------------------------------------------------------------+</echo>
+		<for list="isUpToDate.build.xml,
+				   isUpToDate.build.email.jccc.list,
+				   isUpToDate.build.email.doc.list,
+				   isUpToDate.build.module.list" param="file" trim="true">
+			<sequential>
+				<echo>Checking @{file} property to see if it is set</echo>
+				<if>
+					<not>
+						<isset property="@{file}" />
+					</not>
+					<then>
+						<echo>+---------------------------------------------------+</echo>
+						<echo>|Local build different than build in cvs            |</echo>
+						<echo>+---------------------------------------------------+</echo>
+						<echo>
+						${line.separator}${line.separator}${line.separator}
+						One or more of your local build files does not match one checked out from cvs.
+						You may have one of your files out of date.
+						Please ensure that you have the latest files and that they have the correct values.
+
+						build.xml
+						build.email.doc.list
+						build.email.jccc.list
+						build.module.list
+
+						Hint: they are now located in ${src}\AntTrustCertTask\build directory. perhaps you should
+						copy them over to the directory you are trying to do the build from then fill out the templates
+						and place them where they need to be.
+						${line.separator}${line.separator}${line.separator}
+						</echo>
+						<fail message="Local build different than build in cvs."/>
+					</then>
+					<else><echo>@{file}=${@{file}}</echo></else>
+				</if>
+			</sequential>
+		</for>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- Checkout the configuration files modules into the src directory     -->
+	<!-- =================================================================== -->
+	<target name="cvs.checkoutConfigFiles" unless="skip.target" description="cvs checkout of configuration files used for checksytle">
+		<echo>checkstyle.generateReport = "${checkstyle.generateReport}"</echo>
+		<if>
+			<equals arg1="${checkstyle.generateReport}" arg2="true" />
+			<then>
+				<echo>+-----------------------------------------------------------------+</echo>
+				<echo>|                                                                 |</echo>
+				<echo>| C H E C K I N G   O U T   C H E C K S T Y L E   C V S   C O D E |</echo>
+				<echo>|                                                                 |</echo>
+				<echo>+-----------------------------------------------------------------+</echo>
+				<echo Message="Beginning checkouts of the checksytle module." />
+					<cvs package="CheckstyleConfigFiles" cvsRoot="${cvsConfigFilesRoot}" tag="${cvsConfigFilesBranch}" dest="${src}" />
+			</then>
+			<else>
+				<echo>+-----------------------------------------------------------------+</echo>
+				<echo>|                                                                 |</echo>
+				<echo>| S K I P P I N G   C H E C K S T Y L E   C V S   C H E C K O U T |</echo>
+				<echo>|                                                                 |</echo>
+				<echo>+-----------------------------------------------------------------+</echo>
+			</else>
+		</if>
+	</target>
+
+	<!-- ================================================================================== -->
+	<!-- Get source branch name based off of the tag name that code was checked out from    -->
+	<!-- ================================================================================== -->
+	<target name="cvs.getBranchNameByTagName" unless="skip.target" description="get branch name based off of the cvs tag name">
+		<echo>+---------------------------------------------------------------------+</echo>
+		<echo>|                                                                     |</echo>
+		<echo>| C V S    G E T    B R A N C H    N A M E    B Y    T A G    N A M E |</echo>
+		<echo>|                                                                     |</echo>
+		<echo>+---------------------------------------------------------------------+</echo>
+		<echo>Checking the cvs.checkoutFromTagOnly property and whehter or not build is coming from a properly formatted tag.</echo>
+		<if>
+			<and>
+				<not><matches string="${env.JAVA_HOME}" pattern=".*\\.*1\.6.*"/></not>
+				<matches string="${CVS.BranchNameOrTagName}" pattern="^((AntBuildTag)(.*)([0-9]{12})|(AntCheckoutFor)(.*)([0-9]{12}))$"/>
+				<istrue value="${cvs.checkoutFromTagOnly}"/>
+			</and>
+			<then>
+				<echo>Unset branchName property for initializing the property.</echo>
+				<var name="branchName" unset="true"/>
+
+				<echo>Looping through list of cvs modules.</echo>
+				<for list="${cvsModuleList}" param="module.pbn" trim="true">
+					<sequential>
+						<if>
+							<not><isset property="branchName"/></not>
+							<then>
+								<echo>Injecting all paths into a pathconvert property.</echo>
+								<pathconvert property="source.paths">
+									<regexpmapper from="^(.*)(\\src\\@{module.pbn}.*)$" to="\2" casesensitive="false"/>
+									<path>
+										<dirset dir="${src}/@{module.pbn}" />
+									</path>
+								</pathconvert>
+
+								<echo>Looping through the list of source.paths and executing the cvs log -lh commands to retrieve metadata from cvs and then going to search for branch by tag name.</echo>
+								<for list="${source.paths}" param="path" delimiter="${path.separator}">
+									<sequential>
+										<if>
+											<not><isset property="branchName"/></not>
+											<then>
+												<cvs command="log -lh .@{path}" cvsRoot="${cvsRoot}" output="${src}/@{module.pbn}metadata.dat" failonerror="false"/>
+
+												<trycatch property="javascriptException">
+													<try>
+														<script language="javascript">
+															<![CDATA[
+																var Files = Java.type("java.nio.file.Files");
+																var Charset = Java.type("java.nio.charset.Charset");
+																var Paths = Java.type("java.nio.file.Paths");
+																var Exception = Java.type("java.lang.Exception");
+																var cvsMetadata = src + "/@{module.pbn}metadata.dat";
+																var line = null;
+																var version = null;
+																var branchName = null;
+																var log = project.createTask("echo");
+																try{
+																	lines = Files.readAllLines(Paths.get(cvsMetadata), Charset.forName("UTF-8"));
+																	for(i = 0; i < lines.size(); i++){
+																		line = lines.get(i);
+																		if(line.matches("^.*"+project.getProperty("CVS.BranchNameOrTagName")+": [\\.0-9]{4,}")){
+																			version = line.replaceAll(".*"+project.getProperty("CVS.BranchNameOrTagName")+": ", "");
+																			version = version.substring(0, version.lastIndexOf("."));
+																			version = version.substring(0, version.lastIndexOf(".")) + ".0" + version.substring(version.lastIndexOf("."));
+																			continue;
+																		}//end if
+																		if(version!=null && line.endsWith(version)){
+																			branchName = line.replaceAll("\t", "").replaceAll(":.*", "");
+																			log.setMessage("*** branchName=" + branchName);
+																			log.perform();
+																			project.setProperty("branchName", branchName);
+																			break;
+																		}//end if
+																	}//end for
+																}catch(Exception){
+																	Exception.printStackTrace();
+																}//end try...catch
+															]]>
+														</script>
+													</try>
+													<catch>
+														<script language="javascript">
+															<![CDATA[
+																importClass(java.nio.file.Files);
+																importClass(java.nio.charset.Charset);
+																importClass(java.nio.file.Paths);
+																importClass(java.lang.Exception);
+																var cvsMetadata = src + "/@{module.pbn}metadata.dat";
+																var log = project.createTask("echo");
+																var line = null;
+																var version = null;
+																var branchName = null;
+																try{
+																	lines = Files.readAllLines(Paths.get(cvsMetadata), Charset.forName("UTF-8"));
+																	for(i = 0; i < lines.size(); i++){
+																		line = lines.get(i);
+																		if(line.matches("^.*"+project.getProperty("CVS.BranchNameOrTagName")+": [\\.0-9]{4,}")){
+																			version = line.replaceAll(".*"+project.getProperty("CVS.BranchNameOrTagName")+": ", "");
+																			version = version.substring(0, version.lastIndexOf("."));
+																			version = version.substring(0, version.lastIndexOf(".")) + ".0" + version.substring(version.lastIndexOf("."));
+																			continue;
+																		}//end if
+																		if(version!=null && line.endsWith(version)){
+																			branchName = line.replaceAll("\t", "").replaceAll(":.*", "");
+																			log.setMessage("*** branchName=" + branchName);
+																			log.perform();
+																			project.setProperty("branchName", branchName);
+																			break;
+																		}//end if
+																	}//end for
+																}catch(Exception){
+																	Exception.printStackTrace();
+																}//end try...catch
+															]]>
+														</script>
+													</catch>
+												</trycatch>
+
+												<delete file="${src}/@{module.pbn}metadata.dat" failonerror="false"/>
+											</then>
+										</if>
+									</sequential>
+								</for>
+
+								<var name="source.paths" unset="true"/>
+							</then>
+						</if>
+					</sequential>
+				</for>
+
+				<if>
+					<not><isset property="branchName"/></not>
+					<then>
+						<echo>Branch name was not set, going to set it to a message.</echo>
+						<property name="branchName" value="Could Not Find Source Branch"/>
+					</then>
+				</if>
+			</then>
+		</if>
+	</target>
+
+	<!-- ================================================================================== -->
+	<!-- Commit the current build's buildnumber to branch/head based on the tag checked out -->
+	<!-- ================================================================================== -->
+	<target name="cvs.commitBuildnumber" unless="skip.target" description="cvs commit buildbuildnumber testing">
+		<echo>+------------------------------------------------------+</echo>
+		<echo>|                                                      |</echo>
+		<echo>| C V S    C O M M I T T I N G   B U I L D N U M B E R |</echo>
+		<echo>|                                                      |</echo>
+		<echo>+------------------------------------------------------+</echo>
+		<!-- ################################################################################################# -->
+		<!-- # Here we test to see if we are using a branch or tag by inspecting the CVS.BranchNameOrTagName # -->
+		<!-- # property value. If it is a branch name then copy the build.buildnumber from this base         # -->
+		<!-- # directory to inside the ./src/../build directory for committing the current build.buildnumber # -->
+		<!-- # into the branch.                                                                              # -->
+		<!-- ################################################################################################# -->
+		<echo>Here we test to see if we are using a branch or tag by inspecting the CVS.BranchNameOrTagName property value.</echo>
+		<if>
+			<and>
+				<not><matches string="${CVS.BranchNameOrTagName}" pattern="^((AntBuildTag)(.*)([0-9]{12})|(AntCheckoutFor)(.*)([0-9]{12}))$"/></not>
+				<not><matches string="${CVS.BranchNameOrTagName}" pattern="(.*[0-9]{12})"/></not>
+			</and>
+			<then>
+				<echo>+----------------------------------------------------------------------------------------------------+</echo>
+				<echo>| This is using a branch (or HEAD) so copy the build.buildnumber from the directory we are currently |</echo>
+				<echo>| running in to the build directory underneath the src directory and then commit it to               |</echo>
+				<echo>| CVS.BranchNameOrTagName.                                                                           |</echo>
+				<echo>+----------------------------------------------------------------------------------------------------+</echo>
+				<cvs command="update" package="${src}/${moduleName}/build/build.buildnumber" cvsRoot="${cvsRoot}" />
+				<copy file="build.buildnumber" tofile="${src}/${moduleName}/build/build.buildnumber" verbose="true" overwrite="true"/>
+				<cvs command="commit -m 'Committed by the ant build script for versioning on ${DSTAMP}. Pulled from: ${CVS.BranchNameOrTagName}'" package="${src}/${moduleName}/build/build.buildnumber" cvsRoot="${cvsRoot}" />
+			</then>
+			<else>
+				<echo>+-------------------------------------------------------------------------+</echo>
+				<echo>|                                                                         |</echo>
+				<echo>| C V S   S E T   U P   C O M M I T   F O R   B U I L D N U M B E R       |</echo>
+				<echo>|                                                                         |</echo>
+				<echo>+-------------------------------------------------------------------------+</echo>
+				<!-- ################################################################################################# -->
+				<!-- # If the test above fails then that must mean the CVS.BranchNameOrTagName property value        # -->
+				<!-- # is a tag name and not a branch (or HEAD). Here we test to see if the tag name has the related # -->
+				<!-- # branch name included in the tag name by using a regular expression on it. If it passes the    # -->
+				<!-- # test then we know that the branchName property value that was set in the 'init' target has    # -->
+				<!-- # been set correctly with the name of the branch this tag was originally built from. So         # -->
+				<!-- # checkout the branch (or HEAD) so that we can commit the current build.buildnumber into the    # -->
+				<!-- # related branch (or HEAD). If the test fails then we are pulling from a tag that this script   # -->
+				<!-- # cannot handle commiting the build.buildnumber correctly. We just skip this altogether and     # -->
+				<!-- # move on with the build.                                                                       # -->
+				<!-- ################################################################################################# -->
+				<echo>+----------------------------------------------------------------------------------------------------+</echo>
+				<echo>| This is not a branch that we are building from so it must be a tag we are building from. Run       |</echo>
+				<echo>| regular expression tests on CVS.BranchNameOrTagName and branchName properties to make sure         |</echo>
+				<echo>| it contains the branch name. If it contains the branch name, checkout the module (containg the     |</echo>
+				<echo>| build.buildnumber) from the branch related to this tag and commit the build.buildnumber to it.     |</echo>
+				<echo>| We check the value of branchName as well to make sure that it doesn't contain a deployment         |</echo>
+				<echo>| environment name as this is not a valid branch name.                                               |</echo>
+				<echo>+----------------------------------------------------------------------------------------------------+</echo>
+				<if>
+					<and>
+						<matches string="${CVS.BranchNameOrTagName}" pattern="^((AntBuildTag)(.*)([0-9]{12})|(AntCheckoutFor)(.*)([0-9]{12}))$"/>
+						<not><matches string="${branchName}" pattern="(AntBuildTag|.*[0-9]{12})"/></not>
+					</and>
+					<then>
+						<echo>Make temporary directory to place the module from the branch containing the build directory.</echo>
+						<mkdir dir="tempDir" />
+
+						<echo>Checkout the module that the build.buildnumber needs to be committed to.</echo>
+						<if>
+							<equals arg1="${branchName}" arg2="HEAD" />
+							<then>
+								<echo>Pulling code from the HEAD so here we pull the module from the root by not setting the 'tag' attribute in the cvs task here.</echo>
+								<echo>This is necessary for being able to commit the build.buildnumber file to the head.</echo>
+								<cvs package="${moduleName}" cvsRoot="${cvsRoot}" dest="tempDir" />
+							</then>
+							<else>
+								<echo>Pulling code from a branch or tag name so here we are using the tag attribute in the cvs task here.</echo>
+								<cvs package="${moduleName}" cvsRoot="${cvsRoot}" tag="${branchName}" dest="tempDir" />
+							</else>
+						</if>
+
+						<echo>Here we do a condition check to see if the module containing the build directory was checked out ${moduleName}</echo>
+						<if>
+							<available file="tempDir/${moduleName}" type="dir" />
+							<then>
+								<echo>Module Exists so here we are going to be doing an update and commit of the build.buildnumber.</echo>
+								<cvs command="update" package="tempDir/${moduleName}/build/build.buildnumber" cvsRoot="${cvsRoot}" />
+
+								<echo>Copy the build.buildnumber to the src/../build directory and then commit it to ${branchName}</echo>
+								<copy file="build.buildnumber" tofile="tempDir/${moduleName}/build/build.buildnumber" verbose="true" overwrite="true"/>
+								<cvs command="commit -m 'Committed by the ant build script on ${DSTAMP}. Pulled from: ${CVS.BranchNameOrTagName}'" package="tempDir/${moduleName}/build/build.buildnumber" cvsRoot="${cvsRoot}" />
+							</then>
+							<else>
+								<echo>+-------------------------------------------------------------------------------------------------------------------------------------------+</echo>
+								<echo>|                                                                                                                                           |</echo>
+								<echo>| T H E   M O D U L E   D O E S   N O T   E X I S T   T H E R E F O R E   T H E   B U I L D N U M B E R   W A S   N O T   C O M M I T T E D |</echo>
+								<echo>|                                                                                                                                           |</echo>
+								<echo>+-------------------------------------------------------------------------------------------------------------------------------------------+</echo>
+								<echo>The branch name that was used to attempt a checkout of ${moduleName} was ${branchName}</echo>
+							</else>
+						</if>
+
+						<echo>Delete the temporary directory since this was only used for committing the build.buildnumber to the appropriate branch</echo>
+						<delete dir="tempDir" />
+					</then>
+					<else>
+						<echo>The value of CVS.BranchNameOrTagName and branchName properties failed regular expression tests so build.buildnumber isn't going to be committed.</echo>
+					</else>
+				</if>
+			</else>
+		</if>
+	</target>
+
+	<!-- ==================================================================== -->
+	<!-- Make a new tag for this build if so indicated, (cvs.makeNewTag=true) -->
+	<!-- But, if this code was pulled from a tag which we will also check for -->
+	<!-- in a condition by using a regular expression which will look for     -->
+	<!-- AntBuildTag being part of the value of CVS.BranchNameOrTagName.  If  -->
+	<!-- AntBuildTag happens to be a part of the value of                     -->
+	<!-- CVS.BranchNameOrTagName then we will not tag the code.               -->
+	<!-- ==================================================================== -->
+	<target name="cvs.tag" unless="skip.target" description="tag the src with the new tag name">
+		<echo>cvs.makeNewTag="${cvs.makeNewTag}"</echo>
+		<echo>CVS.BranchNameOrTagName="${CVS.BranchNameOrTagName}"</echo>
+		<if>
+			<and>
+				<equals arg1="${cvs.makeNewTag}" arg2="true" />
+				<not><matches string="${CVS.BranchNameOrTagName}" pattern="(AntBuildTag.*|AntCheckoutFor.*)"/></not>
+			</and>
+			<then>
+				<echo>+---------------------------------------------------+</echo>
+				<echo>|                                                   |</echo>
+				<echo>| T A G G I N G    T H I S    B U I L D             |</echo>
+				<echo>|                                                   |</echo>
+				<echo>+---------------------------------------------------+</echo>
+				<echo Message="Tag All of the modules in the src directory with the new name of ${cvs.newTagName}" />
+				<for list="${cvsModuleList}" param="checkout.pbn" trim="true">
+					<sequential>
+						<if>
+						<not>
+							<equals arg1="@{checkout.pbn}" arg2="" />
+						</not>
+						<then>
+							<echo>+---------------------------------------------------+</echo>
+							<echo>|Calling tag for modules in list                    |</echo>
+							<echo>+---------------------------------------------------+</echo>
+							<cvs package="@{checkout.pbn}" command="tag ${cvs.newTagName}" cvsRoot="${cvsRoot}" dest="${src}" />
+						</then>
+						</if>
+					</sequential>
+				</for>
+			</then>
+			<else>
+				<echo>+---------------------------------------------------+</echo>
+				<echo>|                                                   |</echo>
+				<echo>| S K I P   T A G G I N G   T H I S   B U I L D     |</echo>
+				<echo>|                                                   |</echo>
+				<echo>+---------------------------------------------------+</echo>
+			</else>
+		</if>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- Generate a diff report from this new tag to the previous one        -->
+	<!-- =================================================================== -->
+	<target name="cvs.tagDiff" unless="skip.target" description="generate tagdiff report based upon name or date">
+		<echo>generateTagDiff="${CVS.generateTagDiff}"</echo>
+		<if>
+			<equals arg1="${CVS.generateTagDiff}" arg2="true" />
+			<then>
+				<echo>+---------------------------------------------------+</echo>
+				<echo>|                                                   |</echo>
+				<echo>| T A G D I F F    G E N E R A T I O N              |</echo>
+				<echo>|                                                   |</echo>
+				<echo>+---------------------------------------------------+</echo>
+				<echo>Generating Tag Diff report</echo>
+				<if>
+					<equals arg1="${cvs.makeNewTag}" arg2="true" />
+					<then>
+						<echo>Generating Tag Diff Report from Tags</echo>
+						<cvstagdiff package=" AntTrustCertTask" cvsRoot="${cvsRoot}" destfile="${src}\tagdiff.tmp.xml" startTag="${CVS.oldTagName}" endTag="${cvs.newTagName}" />
+					</then>
+					<else>
+						<echo>Generating Tag Diff Report from Dates</echo>
+						<cvstagdiff package=" AntTrustCertTask" cvsRoot="${cvsRoot}" destfile="${src}\tagdiff.tmp.xml" startDate="${CVS.oldTagDate}" endDate="${DSTAMP}" />
+					</else>
+				</if>
+
+				<echo>+---------------------------------------------------+</echo>
+				<echo>|Set ViewVC properties per user domain env property |</echo>
+				<echo>+---------------------------------------------------+</echo>
+				<if>
+					<not><equals arg1="${env.USERDOMAIN}" arg2="ISU"/></not>
+					<then>
+						<xslt in="${src}\tagdiff.tmp.xml" out="${src}\${application.name}_tagdiff.html" style="${ant.home}\etc\tagdiff.xsl">
+							<param name="title" expression="${application.name} Ant Diff"/>
+							<param name="module" expression="${cvs.repositoryName}"/>
+							<param name="cvsweb" expression="http://moforge.state.mo.us/viewvc/doc/"/>
+						</xslt>
+					</then>
+					<else>
+						<xslt in="${src}\tagdiff.tmp.xml" out="${src}\${application.name}_tagdiff.html" style="${ant.home}\etc\tagdiff.xsl">
+							<param name="title" expression="${application.name} Ant Diff"/>
+							<param name="module" expression="${cvs.repositoryName}"/>
+							<param name="cvsweb" expression="http://${cvs.server}/viewvc/viewvc.cgi/"/>
+						</xslt>
+					</else>
+				</if>
+			</then>
+		</if>
+	</target>
+
+	<!-- ===================================================================================================================== -->
+	<!-- Generate a Changelog which contains the changes that have been made in the branch (or HEAD) that code was pulled from -->
+	<!-- ===================================================================================================================== -->
+	<target name="cvs.changeLog" unless="skip.target" description="generates changelog from branch (or HEAD) that code was pulled from.">
+		<echo>cvs.generateChangeLog="${cvs.generateChangeLog}"</echo>
+		<if>
+			<equals arg1="${cvs.generateChangeLog}" arg2="true" />
+			<then>
+				<echo>+---------------------------------------------------------------------------+</echo>
+				<echo>|                                                                           |</echo>
+				<echo>| C H A N G E L O G   G E N E R A T I O N   P R O C E S S   S T A R T I N G |</echo>
+				<echo>|                                                                           |</echo>
+				<echo>+---------------------------------------------------------------------------+</echo>
+				<echo>+---------------------------------------------------+</echo>
+				<echo>|Changelog generation for days in past              |</echo>
+				<echo>+---------------------------------------------------+</echo>
+				<cvschangelog cvsRoot="${cvsRoot}" dir="${src}" destfile="${src}\changelog.tmp.xml" tag="${CVS.BranchNameOrTagName}" daysinpast="${cvs.changeLogDaysInPast}">
+					<user displayname="Brian Adkison"	 userid="bja000is"/>
+					<user displayname="Brandon Baker"	 userid="bsb000is"/>
+					<user displayname="Jacob Clover"	 userid="jkc000is"/>
+					<user displayname="Kevin Dyal"		 userid="kld000is"/>
+					<user displayname="Andrew Fagre"	 userid="aaf000is"/>
+					<user displayname="Jamie Jackson"	 userid="jfj000is"/>
+					<user displayname="Jeremiah Johnson" userid="jvj000is"/>
+					<user displayname="Mike Johnson"	 userid="mlj000is"/>
+					<user displayname="Juane Kennell"	 userid="jtk000is"/>
+					<user displayname="James Kuhlmann"	 userid="jmk000is"/>
+					<user displayname="Justin Lawrence"	 userid="jal000is"/>
+					<user displayname="Keith Linhardt"	 userid="kdl000is"/>
+					<user displayname="Zach Lisle"		 userid="zml000is"/>
+					<user displayname="Eric Mansfield"	 userid="jem000is"/>
+					<user displayname="David Manwarren"	 userid="dmm000is"/>
+					<user displayname="Leroy Norman"	 userid="lln000is"/>
+					<user displayname="Mike Porter"		 userid="mlp000is"/>
+					<user displayname="Ramsey Pickens"	 userid="rwp000is"/>
+					<user displayname="Richard Salas"	 userid="rts000is"/>
+					<user displayname="Brandon Simpson"	 userid="bss000is"/>
+					<user displayname="Ron Skinner"		 userid="rws000is"/>
+					<user displayname="Steven Skinner"	 userid="sls000is"/>
+					<user displayname="Ryan Sprague"	 userid="rjs000is"/>
+					<user displayname="Brandon Turner"	 userid="bat000is"/>
+					<user displayname="Dwayne T Walker"	 userid="dtw000is"/>
+					<user displayname="Jeffrey Waters"	 userid="jaw000is"/>
+				</cvschangelog>
+
+				<echo>Check the changelog.tmp.xml to see if there are any entries that have been recorded. If no changes were recorded no report is generated.</echo>
+				<if>
+					<isfileselected file="${src}\changelog.tmp.xml">
+						<contains text="&lt;entry&gt;" casesensitive="false"/>
+					</isfileselected>
+					<then>
+						<echo>+-------------------------------------------------------------------------------------------------------------+</echo>
+						<echo>|                                                                                                             |</echo>
+						<echo>| C H A N G E S   W E R E   F O U N D   S O   N O W   C H A N G E L O G   I S   B E I N G   G E N E R A T E D |</echo>
+						<echo>|                                                                                                             |</echo>
+						<echo>+-------------------------------------------------------------------------------------------------------------+</echo>
+						<echo>+-------------------------------------------------------+</echo>
+						<echo>|Apply Changelog formating per user domain env property |</echo>
+						<echo>+-------------------------------------------------------+</echo>
+						<if>
+							<not><equals arg1="${env.USERDOMAIN}" arg2="ISU"/></not>
+							<then>
+								<xslt in="${src}\changelog.tmp.xml" out="${src}\${application.name}_changelog.html" style="${ant.home}\etc\changelog.xsl">
+									<param name="title" expression="${application.name} Changelog pulled from ${CVS.BranchNameOrTagName}"/>
+									<param name="module" expression="${cvs.repositoryName}"/>
+									<param name="cvsweb" expression="http://moforge.state.mo.us/viewvc/doc/"/>
+								</xslt>
+							</then>
+							<else>
+								<xslt in="${src}\changelog.tmp.xml" out="${src}\${application.name}_changelog.html" style="${ant.home}\etc\changelog.xsl">
+									<param name="title" expression="${application.name} Changelog from ${CVS.BranchNameOrTagName}"/>
+									<param name="module" expression="${cvs.repositoryName}"/>
+									<param name="cvsweb" expression="http://${cvs.server}/viewvc/viewvc.cgi/"/>
+								</xslt>
+							</else>
+						</if>
+					</then>
+					<else>
+						<echo>+---------------------------------------------------------------------------------------------------------+</echo>
+						<echo>|                                                                                                         |</echo>
+						<echo>| N O   C H A N G E S   W E R E   F O U N D   S O   C H A N G E L O G   W A S   N O T   G E N E R A T E D |</echo>
+						<echo>|                                                                                                         |</echo>
+						<echo>+---------------------------------------------------------------------------------------------------------+</echo>
+					</else>
+				</if>
+			</then>
+		</if>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- Clean the junk out of the code and any temp files made              -->
+	<!-- =================================================================== -->
+	<target name="cvs.cleanup" description="clean up code from cvs before compiling, packaging, ect.">
+		<echo>+---------------------------------------------------+</echo>
+		<echo>|                                                   |</echo>
+		<echo>| C L E A N I N G    U P    C V S    C O D E        |</echo>
+		<echo>|                                                   |</echo>
+		<echo>+---------------------------------------------------+</echo>
+			<echo>+---------------------------------------------------+</echo>
+			<echo>|Delete any class files in all directories          |</echo>
+			<echo>+---------------------------------------------------+</echo>
+			<delete includeemptydirs="true" verbose="true">
+				<fileset dir="${src}" includes="**/*.class" defaultexcludes="false"/>
+			</delete>
+
+			<echo>+---------------------------------------------------+</echo>
+			<echo>|Delete any xml files in all directories            |</echo>
+			<echo>+---------------------------------------------------+</echo>
+			<delete includeemptydirs="true" verbose="true">
+				<fileset dir="${src}" includes="**/projectTestFile.xml" defaultexcludes="false"/>
+			</delete>
+
+			<echo>+---------------------------------------------------+</echo>
+			<echo>|Delete Thumbs.db files in any directory            |</echo>
+			<echo>+---------------------------------------------------+</echo>
+			<delete includeemptydirs="true" verbose="true">
+				<fileset dir="${src}" includes="**/**/Thumbs.db" defaultexcludes="false"/>
+			</delete>
+
+			<echo>+---------------------------------------------------+</echo>
+			<echo>|Delete temporary cvs files, tagdiff, changelog     |</echo>
+			<echo>+---------------------------------------------------+</echo>
+			<delete includeemptydirs="true" verbose="true">
+				<fileset dir="${src}" includes="**/*.tmp.xml" defaultexcludes="false"/>
+			</delete>
+	</target>
+
+	<!-- ================================================================================== -->
+	<!-- Commit the new jar version number into the build.properties file (branch or head)  -->
+	<!-- ================================================================================== -->
+	<target name="cvs.commitJarVersionNumber" unless="skip.target" description="cvs commit new jar version number into the build.properties file">
+		<echo>+--------------------------------------------------------------------+</echo>
+		<echo>|                                                                    |</echo>
+		<echo>| C V S    C O M M I T T I N G   J A R   V E R S I O N   N U M B E R |</echo>
+		<echo>|                                                                    |</echo>
+		<echo>+--------------------------------------------------------------------+</echo>
+		<!-- ################################################################################################# -->
+		<!-- # Here we test to see if we are using a branch or tag by inspecting the CVS.BranchNameOrTagName # -->
+		<!-- # property value.                                                                               # -->
+		<!-- ################################################################################################# -->
+		<echo>Here we test to see if we are using a branch or tag by inspecting the CVS.BranchNameOrTagName property value.</echo>
+		<if>
+			<and>
+				<istrue value="${update.distributionJar}"/>
+				<not><matches string="${CVS.BranchNameOrTagName}" pattern="^((AntBuildTag)(.*)([0-9]{12})|(AntCheckoutFor)(.*)([0-9]{12}))$"/></not>
+			</and>
+			<then>
+				<echo>Replacing the JAR.VersionNumber value within the build.properties file with new one.</echo>
+				<cvs command="update" package="${src}/${moduleName}/build/build.buildnumber" cvsRoot="${cvsRoot}" />
+				<replaceregexp file="${src}/${moduleName}/build/build.properties" match="(JAR.VersionNumber=)(.*)" replace="\1${JAR.VersionNumber}" flags="g" />
+				<cvs command="commit -m 'Committed by the ant build script for versioning on ${DSTAMP}. Pulled from: ${CVS.BranchNameOrTagName}'" package="${src}/${moduleName}/build/build.properties" cvsRoot="${cvsRoot}" />
+			</then>
+			<else>
+				<echo>+-------------------------------------------------------------------------------------------+</echo>
+				<echo>|                                                                                           |</echo>
+				<echo>| C V S   S K I P P I N G   C O M M I T   O F   N E W   J A R   V E R S I O N   N U M B E R |</echo>
+				<echo>|                                                                                           |</echo>
+				<echo>+-------------------------------------------------------------------------------------------+</echo>
+			</else>
+		</if>
+	</target>
+
+<!-- ###################################################################### -->
+<!-- # Section:Preparation                                                # -->
+<!-- #     Description: This is a bit of moving files around to ensure    # -->
+<!-- #                  that the proper properties files, jar files etc   # -->
+<!-- #                  are in the correct place. This may include some   # -->
+<!-- #                  file editing where neccesary to change variables  # -->
+<!-- ###################################################################### -->
+	<target name="prep.env" unless="skip.target" description="changing values based upon an environment or a cell that app will be in">
+		<echo>+---------------------------------------------------+</echo>
+		<echo>|                                                   |</echo>
+		<echo>| M O V I N G    E N V I R O M E N T    F I L E S   |</echo>
+		<echo>|                                                   |</echo>
+		<echo>+---------------------------------------------------+</echo>
+			<if>
+				<not><equals arg1="${env.USERDOMAIN}" arg2="ISU"/></not>
+				<then>
+					<echo>This is a placeholder for doc ads domain</echo>
+				</then>
+				<else>
+					<echo>This is a placeholder for doc isu domain</echo>
+				</else>
+			</if>
+	</target>
+
+<!-- ###################################################################### -->
+<!-- # Section:Compile                                                    # -->
+<!-- #     Description: Straight forward, build the classpaths and then,  # -->
+<!-- #                  just compile the src dir                          # -->
+<!-- ###################################################################### -->
+	<target name="java.compile" description="build classpaths and compile source code">
+		<echo>+---------------------------------------------------+</echo>
+		<echo>|                                                   |</echo>
+		<echo>| B U I L D I N G    C L A S S P A T H S            |</echo>
+		<echo>|                                                   |</echo>
+		<echo>+---------------------------------------------------+</echo>
+		<path id="AntTrustCertTask.classpath">
+			<pathelement location="${src}/AntTrustCertTask/lib/ant-launcher.jar" />
+			<pathelement location="${src}/AntTrustCertTask/lib/ant.jar" />
+			<pathelement location="${src}/AntTrustCertTask/lib/xercesImpl.jar" />
+		</path>
+
+		<echo>+-------------------------------------------------------+</echo>
+		<echo>|                                                       |</echo>
+		<echo>| C O M P I L I N G    A n t T r u s t C e r t T a s k  |</echo>
+		<echo>|                                                       |</echo>
+		<echo>+-------------------------------------------------------+</echo>
+		<javac srcdir="${src}/AntTrustCertTask/src"
+			   destdir="${src}/AntTrustCertTask/src"
+			   debug="on"
+			   optimize="off"
+			   deprecation="off"
+			   fork="yes"
+			   failonerror="true"
+			   executable="${java8.compiler.home}\bin\javac.exe"
+			   compiler="javac1.8">
+			   	<classpath refid="AntTrustCertTask.classpath" />
+		</javac>
+	</target>
+
+<!-- ###################################################################### -->
+<!-- # Section:JavaDoc                                                    # -->
+<!-- #     Description: Generate Javadocs and put them in with the code   # -->
+<!-- ###################################################################### -->
+	<target name="javadoc" description="generate javadocs for application">
+		<echo>Switch property generate.javadocs = ${generate.javadocs}</echo>
+		<echo>Switch property GENERATE.javadocs.only = ${GENERATE.javadocs.only}</echo>
+		<if>
+			<or>
+				<equals arg1="${generate.javadocs}" arg2="true" />
+				<equals arg1="${GENERATE.javadocs.only}" arg2="true" />
+			</or>
+			<then>
+				<echo>+---------------------------------------------------------------------------------+</echo>
+				<echo>|                                                                                 |</echo>
+				<echo>| G E N E R A T I N G   J A V A D O C S   F O R   A n t T r u s t C e r t T a s k |</echo>
+				<echo>|                                                                                 |</echo>
+				<echo>+---------------------------------------------------------------------------------+</echo>
+				<javadoc
+					access="private"
+					author="true"
+					destdir="${src}/docs/AntTrustCertTask"
+					sourcepath="${src}/AntTrustCertTask/src"
+					nodeprecated="false"
+					nodeprecatedlist="false"
+					noindex="false"
+					nonavbar="false"
+					notree="false"
+					source="1.8"
+					splitindex="true"
+					use="true"
+					version="true">
+						<classpath refid="AntTrustCertTask.classpath" />
+					<doctitle><![CDATA[<h1>AntTrustCertTask Jar Module</h1>]]></doctitle>
+					<bottom><![CDATA[<i>Copyright &#169; 2023 Missouri Department Of Corrections. All Rights Reserved.</i>]]></bottom>
+					<group title="ANT: Trust Certificate Task"			packages="com.omo.free.trustcert"/>
+					<group title="ANT:Main Test"						packages="com.omo.tools.ant.main"/>
+					<group title="ANT:Security"							packages="com.omo.free.security.ssl"/>
+
+					<link offline="false" href="http://developer.java.sun.com/developer/products/xml/docs/api/"/>
+					<link offline="false" href="http://jakarta.apache.org/oro/api/"/>
+				</javadoc>
+			</then>
+			<else>
+				<echo>+---------------------------------------------------------------------------+</echo>
+				<echo>|                                                                           |</echo>
+				<echo>| J A V A D O C   G E N E R A T I O N   T A R G E T   W A S   S K I P P E D |</echo>
+				<echo>|                                                                           |</echo>
+				<echo>+---------------------------------------------------------------------------+</echo>
+			</else>
+		</if>
+	</target>
+
+<!-- ###################################################################### -->
+<!-- # Section:Checkstyle Violations Report                               # -->
+<!-- #     Description: This section creates an .html checkstyle          # -->
+<!-- #                  violation report. First establish the taskdef for # -->
+<!-- #                  the checkstyle task which is in the               # -->
+<!-- #                  checkstyle-8.29-all.jar file.                     # -->
+<!-- ###################################################################### -->
+	<target name="checkstyle" unless="skip.target" description="establish taskdef and run a checkstyle on all java files">
+		<echo>Switch property checkstyle.generateReport = ${checkstyle.generateReport}</echo>
+		<if>
+			<and>
+				<equals arg1="${checkstyle.generateReport}" arg2="true" />
+				<available file="${src}\CheckstyleConfigFiles" type="dir" />
+			</and>
+			<then>
+				<echo>+----------------------------------------------------+</echo>
+				<echo>|                                                    |</echo>
+				<echo>|  R U N N I N G   C H E C K S T Y L E               |</echo>
+				<echo>|                                                    |</echo>
+				<echo>+----------------------------------------------------+</echo>
+				<path id="Checkstyle.classpath">
+					<pathelement location="${src}/CheckstyleConfigFiles/lib/checkstyle-8.29-all.jar"/>
+				</path>
+
+				<echo>Establish taskdef for checkstyle</echo>
+				<taskdef resource="com/puppycrawl/tools/checkstyle/ant/checkstyle-ant-task.properties">
+					<classpath refid="Checkstyle.classpath"/>
+				</taskdef>
+
+				<checkstyle config="${src}/CheckstyleConfigFiles/checkstyle-config-1.8.xml" failonviolation="false" maxwarnings="0" failureproperty="checkstyle.fail">
+					<formatter type="xml" toFile="${src}/checkstyle_report.xml"/>
+					<fileset dir="${src}">
+						<include name="**/src/**/*.java"/>
+					</fileset>
+				</checkstyle>
+
+				<if>
+					<isset property="checkstyle.fail" />
+					<then>
+						<echo>+------------------------------------------------------+</echo>
+						<echo>|                                                      |</echo>
+						<echo>|  C R E A T I N G   C H E C K S T Y L E   R E P O R T |</echo>
+						<echo>|                                                      |</echo>
+						<echo>+------------------------------------------------------+</echo>
+						<echo>Filter URLs with more precise paths within each module.</echo>
+						<replace file="${src}\checkstyle_report.xml" token="name=&quot;${basedir}\src\" value="name=&quot;" />
+
+						<echo>Filter out *.java files with no violations to show only the .*java files with violations in the checkstyle html report.</echo>
+						<replaceregexp file="${src}\checkstyle_report.xml" match="^.*file .*\>\r\n.*file\>\r\n" replace="" flags="gm" byline="false"/>
+						<replaceregexp file="${src}\checkstyle_report.xml" match="Example:  .*\.equals\(ind\);  not ind.equals\(.*\)" replace="Example: &amp;quot;Y&amp;quot;.equals(ind); not ind.equals(&amp;quot;Y&amp;quot;)" flags="g"/>
+
+						<echo>Generate the checkstyle html report.</echo>
+						<xslt in="${src}\checkstyle_report.xml" out="${src}\${application.name}_checkstyle_report.html" style="${src}/CheckstyleConfigFiles/checkstyle-noframes-sorted.xsl">
+							<param name="title" expression="${application.name}"/>
+							<param name="branch" expression="${CVS.BranchNameOrTagName}"/>
+							<param name="buildName" expression="${application.name}_${build.number}"/>
+							<param name="repository" expression="${cvsRepository}"/>
+						</xslt>
+						<delete file="${src}/checkstyle_report.xml" verbose="true"/>
+
+						<echo>Filter out slashes from the anchor tags href and name attributes.</echo> <!-- this makes links work in all browsers -->
+						<replaceregexp file="${src}\${application.name}_checkstyle_report.html" match="(href=&quot;#f-.*\\)(.*&quot;)" replace="href=&quot;#f-\2" flags="g" />
+						<replaceregexp file="${src}\${application.name}_checkstyle_report.html" match="(name=&quot;f-.*\\)(.*&quot;)" replace="name=&quot;f-\2" flags="g" />
+
+						<property name="checkstyle.message" value="&lt;p&gt;Checkstyle was performed on the java source code and violations were found. Attached is the checkstyle report for viewing the violations.&lt;/p&gt;" description="email msg - violations were found" />
+					</then>
+					<else>
+						<echo>+-------------------------------------------------------------------------+</echo>
+						<echo>|                                                                         |</echo>
+						<echo>|   N O   C H E C K S T Y L E   V I O L A T I O N S   W E R E   F O U N D |</echo>
+						<echo>|                                                                         |</echo>
+						<echo>+-------------------------------------------------------------------------+</echo>
+						<property name="checkstyle.message" value="&lt;p&gt;Checkstyle was performed on the java source code and NO violations were found.&lt;/p&gt;" description="email msg - no violations were found" />
+						<delete file="${src}/checkstyle_report.xml" verbose="true"/>
+					</else>
+				</if>
+			</then>
+			<else>
+				<echo>+-------------------------------------------------------------+</echo>
+				<echo>|                                                             |</echo>
+				<echo>|   C H E C K S T Y L E   T A R G E T   W A S   S K I P P E D |</echo>
+				<echo>|                                                             |</echo>
+				<echo>+-------------------------------------------------------------+</echo>
+				<property name="checkstyle.message" value="" description="email msg - blank" />
+			</else>
+		</if>
+	</target>
+
+<!-- ###################################################################### -->
+<!-- # Section:Task Tags Report                                           # -->
+<!-- #     Description: This section creates an .html task tags report.   # -->
+<!-- #                  First establish the type definition for           # -->
+<!-- #                  the task tags task which is in the                # -->
+<!-- #                  ant-tasktag-reports-1.0.jar file. Task tags       # -->
+<!-- #                  include TODO, FIXME, and CLEANME tags that are    # -->
+<!-- #                  found within source files of the application.     # -->
+<!-- ###################################################################### -->
+	<target name="tasktag" unless="skip.target" description="establish typedef and run the tasktagreport task to generate a report">
+		<echo>Switch property tasktags.generateReport = ${tasktags.generateReport}</echo>
+		<if>
+			<equals arg1="${tasktags.generateReport}" arg2="true" />
+			<then>
+				<echo>Attempt to add a task type definition such that this tasktagreport task can be used in the current project.</echo>
+				<typedef name="tasktagreport" classname="com.omo.tools.ant.TaskTagReportTask" onerror="report"/>
+
+				<echo>Making sure that the class that implements the TaskTagReportTask class exists before running the task.</echo>
+				<if>
+					<typefound name="tasktagreport"/>
+					<then>
+						<echo>+--------------------------------------------------------------------------+</echo>
+						<echo>|                                                                          |</echo>
+						<echo>|  A T T E M P T I N G   T O   C R E A T E   T A S K   T A G   R E P O R T |</echo>
+						<echo>|                                                                          |</echo>
+						<echo>+--------------------------------------------------------------------------+</echo>
+						<tasktagreport outFile="${src}\${application.name}_tasktag_report.html"
+									   applicationName="${application.name}"
+									   repository="${cvsRepository}"
+									   branchOrTagName="${CVS.BranchNameOrTagName}"
+									   buildName="${jar.name}"
+									   format="html"
+									   dir="src"
+									   verbose="false"
+									   pattern="(^:\s|-->)">
+							<include name="**/*.java"/>
+							<include name="**/*.js"/>
+							<include name="**/*.jsp"/>
+							<exclude name="**/ToDoTaglet.java"/>
+						</tasktagreport>
+
+						<echo>Check the ${application.name}_tasktag_report.html to see if there are any task tags that have been recorded. If no task tags were recorded no report is going to be sent.</echo>
+						<if>
+							<isfileselected file="${src}\${application.name}_tasktag_report.html">
+								<contains text="Summary" casesensitive="false"/>
+							</isfileselected>
+							<then>
+								<echo>+--------------------------------------------------------------------------------------------+</echo>
+								<echo>|                                                                                            |</echo>
+								<echo>|  T A S K   T A G S   W E R E   F O U N D ! ! !   S E T T I N G   E M A I L   M E S S A G E |</echo>
+								<echo>|                                                                                            |</echo>
+								<echo>+--------------------------------------------------------------------------------------------+</echo>
+								<echo>Deleting the ${application.name}_tasktag_report.html file as there were no task tags recorded.</echo>
+								<property name="tasktag.message" value="&lt;p&gt;A search for task tags was performed on the source code and task tags were found. Attached is the task tags report for viewing them.&lt;/p&gt;" description="email msg - task tags were found" />
+							</then>
+							<else>
+								<echo>+------------------------------------------------------------------------------------------------+</echo>
+								<echo>|                                                                                                |</echo>
+								<echo>|  N O  T A S K  T A G S   W E R E   F O U N D ! ! !   S E T T I N G   E M A I L   M E S S A G E |</echo>
+								<echo>|                                                                                                |</echo>
+								<echo>+------------------------------------------------------------------------------------------------+</echo>
+								<echo>Deleting the ${application.name}_tasktag_report.html file as there were no task tags recorded.</echo>
+								<property name="tasktag.message" value="&lt;p&gt;A search for task tags was performed on the source code and NO task tags were found.&lt;/p&gt;" description="email msg - no task tags were found" />
+								<delete file="${src}\${application.name}_tasktag_report.html" verbose="true"/>
+							</else>
+						</if>
+					</then>
+					<else>
+						<echo>+---------------------------------------------------------------------------------------------------+</echo>
+						<echo>|                                                                                                   |</echo>
+						<echo>|   T A S K T A G S   I M P L E M E N T A T I O N   C L A S S   C O U L D   N O T   B E   F O U N D |</echo>
+						<echo>|                                                                                                   |</echo>
+						<echo>+---------------------------------------------------------------------------------------------------+</echo>
+						<echo>
+							Class Not Found:  com.omo.tools.ant.TaskTagReportTask
+
+							If you see this error message then you will need to obtain a copy of the
+							ant-tasktag-reports-1.0.jar. You can obtain this jar from a known ant user
+							or ask where the distribution location of this jar is located. Once you have
+							obtained this jar then you only need to add the jar file
+							(ant-tasktag-reports-1.0.jar) to the lib directory underneath your
+							ant installation.
+
+							FOR EXAMPLE:  C:\apache-ant-1.9.4\lib
+										  (this directory is where you should place the
+										   ant-tasktag-reports-1.0.jar)
+						</echo>
+						<property name="tasktag.message" value="&lt;p&gt;&lt;font color=&quot;red&quot;&gt;An attempt was made to search for task tags in the source code and has failed. Please check the build log for detailed instructions on getting this fixed for future builds.&lt;/font&gt;&lt;/p&gt;" description="email msg - blank" />
+					</else>
+				</if>
+			</then>
+			<else>
+				<echo>+-------------------------------------------------------------+</echo>
+				<echo>|                                                             |</echo>
+				<echo>|   T A S K T A G S   T A R G E T   W A S   S K I P P E D     |</echo>
+				<echo>|                                                             |</echo>
+				<echo>+-------------------------------------------------------------+</echo>
+				<property name="tasktag.message" value="" description="email msg - blank" />
+			</else>
+		</if>
+	</target>
+
+<!-- ###################################################################### -->
+<!-- # Section:Packaging                                                  # -->
+<!-- #     Description: Jaring, Waring, Earing, Raring if ever necessary  # -->
+<!-- ###################################################################### -->
+	<target name="java.jar" unless="skip.target" description="package source files into a jar file">
+		<echo>+------------------------------------------------+</echo>
+		<echo>|                                                |</echo>
+		<echo>| J A R I N G    A n t T r u s t C e r t T a s k |</echo>
+		<echo>|                                                |</echo>
+		<echo>+------------------------------------------------+</echo>
+		<jar destfile="${jar.name}" filesetmanifest="mergewithoutmain" >
+			<manifest>
+				<attribute name="Built-By" value="${user.id}"/>
+				<attribute name="Software-Owner" value="ISU"/>
+				<attribute name="Software-Description" value="ANT task used for trusting a web cerftificate when calling the secure website url"/>
+				<attribute name="Repository-Name" value="${cvsRepository}"/>
+				<attribute name="Branch-Or-Tag-Name" value="${CVS.BranchNameOrTagName}"/>
+				<attribute name="Name-Of-Tag-Created" value="${manifest.cvstagname}"/>
+				<attribute name="Implementation-Title" value="common"/>
+				<attribute name="Implementation-Version" value="${application.name}_${build.number} ${TODAY}"/>
+				<attribute name="Implementation-Vendor" value="MO DOC"/>
+				<section name="com/omo/free/security/ssl/">
+					<attribute name="Specification-Title" value="${application.name} Security Secure Sockets Layer"/>
+					<attribute name="Specification-Version" value="${application.name}_${build.number}"/>
+					<attribute name="Specification-Vendor" value="MO DOC"/>
+					<attribute name="Implementation-Title" value="common"/>
+					<attribute name="Implementation-Version" value="${application.name}_${build.number} ${TODAY}"/>
+					<attribute name="Implementation-Vendor" value="MO DOC"/>
+				</section>
+				<section name="com/omo/free/trustcert/">
+					<attribute name="Specification-Title" value="${application.name} Trust Certificate Task"/>
+					<attribute name="Specification-Version" value="${application.name}_${build.number}"/>
+					<attribute name="Specification-Vendor" value="MO DOC"/>
+					<attribute name="Implementation-Title" value="common"/>
+					<attribute name="Implementation-Version" value="${application.name}_${build.number} ${TODAY}"/>
+					<attribute name="Implementation-Vendor" value="MO DOC"/>
+				</section>
+				<section name="com/omo/tools/ant/main/">
+					<attribute name="Package-Title" value="${application.name} Main Test"/>
+					<attribute name="Package-Version" value="${application.name}_${build.number}"/>
+					<attribute name="Package-Vendor" value="MO DOC"/>
+					<attribute name="Implementation-Title" value="common"/>
+					<attribute name="Implementation-Version" value="${application.name}_${build.number} ${TODAY}"/>
+					<attribute name="Implementation-Vendor" value="MO DOC"/>
+				</section>
+			</manifest>
+			<fileset dir="${src}/AntTrustCertTask/src" excludes="${filesToExclude}"/>
+		</jar>
+	</target>
+
+	<!-- ================================================================================== -->
+	<!-- Copy the archived file to its destination(s)                                       -->
+	<!-- ================================================================================== -->
+	<target name="copy" if="available.jar.archive.location" unless="skip.target" description="copy the packaged archive to an archive location">
+		<echo>+---------------------------------------------------+</echo>
+		<echo>|                                                   |</echo>
+		<echo>| C O P Y I N G    J A R    F I L E                 |</echo>
+		<echo>|                                                   |</echo>
+		<echo>+---------------------------------------------------+</echo>
+		<copy tofile="${jar.archiveLocation}\${jar.name}"	file="${src}/../${jar.name}" verbose="true" overwrite="true"/>
+
+		<if>
+			<and>
+				<istrue value="${update.distributionJar}"/>
+				<not><matches string="${CVS.BranchNameOrTagName}" pattern="^((AntBuildTag)(.*)([0-9]{12})|(AntCheckoutFor)(.*)([0-9]{12}))$"/></not>
+			</and>
+			<then>
+				<echo>+---------------------------------------------------------------------------------------------------------------------------------+</echo>
+				<echo>|                                                                                                                                 |</echo>
+				<echo>| C O M M I T T I N G   N E W   A N T   T A S K   J A R   W I T H I N   D I S T R I B U T I O N   L O C A T I O N   I N   C V S   |</echo>
+				<echo>|                                                                                                                                 |</echo>
+				<echo>+---------------------------------------------------------------------------------------------------------------------------------+</echo>
+				<if>
+					<available file="${src}/${moduleName}/DISTRIBUTION/${jar.name}" type="file" />
+					<then>
+						<trycatch property="exceptionRunningCVSCommitCommandMsg">
+							<try>
+								<echo>Overwriting jar that is named the same with a new one and then committing it.</echo>
+								<copy file="${jar.name}" tofile="${src}/${moduleName}/DISTRIBUTION/${jar.name}" verbose="true" overwrite="true"/>
+
+								<echo>Committing new framework jar into cvs distribution location.</echo>
+								<cvs command="commit -m 'Committed by the ant build script for versioning on ${DSTAMP}. Pulled from: ${CVS.BranchNameOrTagName}'" package="${src}/${moduleName}/DISTRIBUTION/${jar.name}" cvsRoot="${cvsRoot}" failonerror="true"/>
+								<property name="newJarVersionMsg" value="&lt;p&gt;&lt;font color=&quot;green&quot;&gt;A copy of the ${jar.name} can be found within the ${moduleName}/DISTRIBUTION location within cvs.&lt;/font&gt;&lt;/p&gt;" />
+							</try>
+							<catch>
+								<echo>+-----------------------------------------------------------------------------------------------+</echo>
+								<echo>|                                                                                               |</echo>
+								<echo>| E X C E P T I O N ! ! !   W H I L E   E X E C U T I N G   C V S   c o m m i t   C O M M A N D |</echo>
+								<echo>|                                                                                               |</echo>
+								<echo>+-----------------------------------------------------------------------------------------------+</echo>
+								<echo>
+									${line.separator}${line.separator}
+									An Exception has occured while attempting to execute the cvs commit command.
+
+									THE EXCEPTION CAUGHT IS: ${exceptionRunningCVSCommitCommandMsg}
+
+									Possible reasons this occured are:
+
+									1) You do not have authority to access the repository.
+
+									CVS Repository: ${cvsRepository}
+
+									POSSIBLE SOLUTION
+									You may need to get with the server administrator to grant you full permissions
+									to be able to access the cvs server.
+									${line.separator}${line.separator}
+								</echo>
+								<property name="newJarVersionMsg" value="&lt;p&gt;&lt;font color=&quot;red&quot;&gt;Could not commit the ${jar.name} into the DISTRIBUTION location located within cvs. Please check build log for further details.&lt;/font&gt;&lt;/p&gt;" />
+							</catch>
+						</trycatch>
+					</then>
+					<else>
+						<trycatch property="exceptionRunningCVSCommitCommandMsg">
+							<try>
+								<echo>Deleting old framework jar to be replaced with new one..</echo>
+								<delete verbose="true" failonerror="false">
+									<fileset dir="${src}/${moduleName}/DISTRIBUTION" includes="*.jar"/>
+								</delete>
+
+								<echo>Remove the old jar from cvs due to the new jar version number being different.</echo>
+								<cvs command="remove -R" package="${src}/${moduleName}/DISTRIBUTION" cvsRoot="${cvsRoot}" />
+								<cvs command="commit -m 'Removal of the jar file for versioning on ${DSTAMP}. Pulled from: ${CVS.BranchNameOrTagName}'" package="${src}/${moduleName}/DISTRIBUTION" cvsRoot="${cvsRoot}" failonerror="true"/>
+
+								<echo>Copy newly built jar into the distribution location so that it can be added to cvs.</echo>
+								<copy file="${jar.name}" tofile="${src}/${moduleName}/DISTRIBUTION/${jar.name}" verbose="true" overwrite="true"/>
+
+								<echo>A script needs to be created for adding the new binary jar file to cvs.</echo>
+								<echoxml file="${src}\${moduleName}\DISTRIBUTION\binaryScript.xml" >
+									<project default="cvs.add" basedir=".">
+										<target name="cvs.add">
+											<cvs command="add -kb ${jar.name}" cvsRoot="${cvsRoot}" />
+										</target>
+									</project>
+								</echoxml>
+
+								<echo>Run the binaryScript.xml ant script to add new jar file to cvs and then delete it.</echo>
+								<ant antfile="${src}\${moduleName}\DISTRIBUTION\binaryScript.xml" inheritall="false"/>
+								<delete file="${src}\${moduleName}\DISTRIBUTION\binaryScript.xml" verbose="true" />
+
+								<echo>Commit the new jar file into the distribution location located within cvs.</echo>
+								<cvs command="commit -m 'New jar was committed file for versioning on ${DSTAMP}. Pulled from: ${CVS.BranchNameOrTagName}'" package="${src}/${moduleName}/DISTRIBUTION/${jar.name}" cvsRoot="${cvsRoot}" failonerror="true"/>
+								<property name="newJarVersionMsg" value="&lt;p&gt;&lt;font color=&quot;green&quot;&gt;A copy of the ${jar.name} can be found within the ${moduleName}/DISTRIBUTION location within cvs.&lt;/font&gt;&lt;/p&gt;" />
+							</try>
+							<catch>
+								<echo>+-----------------------------------------------------------------------------------------------+</echo>
+								<echo>|                                                                                               |</echo>
+								<echo>| E X C E P T I O N ! ! !   W H I L E   E X E C U T I N G   C V S   c o m m i t   C O M M A N D |</echo>
+								<echo>|                                                                                               |</echo>
+								<echo>+-----------------------------------------------------------------------------------------------+</echo>
+								<echo>
+									${line.separator}${line.separator}
+									An Exception has occured while attempting to execute the cvs commit command.
+
+									THE EXCEPTION CAUGHT IS: ${exceptionRunningCVSCommitCommandMsg}
+
+									Possible reasons this occured are:
+
+									1) You do not have authority to access the repository.
+
+									CVS Repository: ${cvsRepository}
+
+									POSSIBLE SOLUTION
+									You may need to get with the server administrator to grant you full permissions
+									to be able to access the cvs server.
+									${line.separator}${line.separator}
+								</echo>
+								<property name="newJarVersionMsg" value="&lt;p&gt;&lt;font color=&quot;red&quot;&gt;Could not commit the ${jar.name} into the DISTRIBUTION location located within cvs. Please check build log for further details.&lt;/font&gt;&lt;/p&gt;" />
+							</catch>
+						</trycatch>
+					</else>
+				</if>
+			</then>
+			<else>
+				<echo>+---------------------------------------------------------------------------------------------------------------------------------------+</echo>
+				<echo>|                                                                                                                                       |</echo>
+				<echo>| S K I P P I N G   T H E   A T T E M P T   T O   U P D A T E   J A R   W I T H I N   C V S   D I S T R I B U T I O N   L O C A T I O N |</echo>
+				<echo>|                                                                                                                                       |</echo>
+				<echo>+---------------------------------------------------------------------------------------------------------------------------------------+</echo>
+				<property name="newJarVersionMsg" value="&lt;p&gt;&lt;font color=&quot;red&quot;&gt;The ${jar.name} was requested not to be updated in the cvs DISTRIBUTION location, by ${user.id}.&lt;/font&gt;&lt;/p&gt;" />
+			</else>
+		</if>
+	</target>
+
+<!-- ###################################################################### -->
+<!-- # Section:Emailing                                                   # -->
+<!-- #     Description: Send email to                                     # -->
+<!-- #                  DOC and off site developers and other             # -->
+<!-- #                  consultants, managment et cettera saying the      # -->
+<!-- #                  build was created with all anciliary information. # -->
+<!-- ###################################################################### -->
+	<target name="email" unless="skip.target" description="send email with application specific information">
+		<echo>Switch property mail.send = ${mail.send}</echo>
+		<if>
+			<equals arg1="${mail.send}" arg2="true"/>
+			<then>
+				<echo>+---------------------------------------------------+</echo>
+				<echo>|                                                   |</echo>
+				<echo>| E M A I L I N G    F O R    D O C                 |</echo>
+				<echo>|                                                   |</echo>
+				<echo>+---------------------------------------------------+</echo>
+					<echo>Setting source branch name line for email here.</echo>
+					<if>
+						<equals arg1="${CVS.BranchNameOrTagName}" arg2="${branchName}"/>
+						<then>
+							<property name="sourceBranchNameLine" value="" />
+						</then>
+						<else>
+							<property name="sourceBranchNameLine" value="&lt;tr&gt;&lt;td&gt;&lt;b&gt;Source Branch Name:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;${branchName}&lt;/td&gt;&lt;/tr&gt;" />
+						</else>
+					</if>
+
+					<mail mailhost="${mail.mailhost}"
+						messagemimetype="text/html"
+						charset="ISO-8859-1"
+						subject="A Build For ${application.name} from ${CVS.BranchNameOrTagName} has been generated"
+						from="${mail.from}"
+						tolist="${emailList}"
+						bcclist="">
+						<message>
+							<![CDATA[
+							${emailListAvailableMessage}
+							<p>A new Build for ${application.name} has been generated by ${user.id}. </p>
+
+							<p>A copy of the jar file was placed on <a href="file:${jar.archiveLocation}">${jar.archiveLocation}</a> for archive purposes</p>
+
+							<h3 style="font-size:large;color:#6495ED;">Build Summary</h3>
+							<table width="100%" bgcolor="#E6E6FA" cellpadding="5" style="border-top: 1px solid black; border-bottom: 1px solid black">
+								<tr><td width="25%"><b>Jar File Name:</b></td><td width="75%">${jar.name}</td></tr>
+								<tr><td><b>Version Name:</b></td><td>${application.name}_${build.number}</td></tr>
+								<tr><td><b>Tag Name:</b></td><td>${mail.cvstagname}</td></tr>
+								<tr><td><b>Repository:</b></td><td>${cvsRepository}</td></tr>
+								<tr><td><b>Pulled From:</b></td><td>${CVS.BranchNameOrTagName}</td></tr>
+								${sourceBranchNameLine}
+								<tr><td><b>Built By:</b></td><td>${user.id}</td></tr>
+							</table>
+
+							${checkstyle.message}
+							${tasktag.message}
+							${newJarVersionMsg}
+							<p>Thank you very much and have a nice day.</p>
+							]]>
+							</message>
+						<fileset dir="${src}" casesensitive="yes">
+						  <include name="*.html"/>
+						</fileset>
+					</mail>
+			</then>
+			<else>
+				<echo>+---------------------------------------------------+</echo>
+				<echo>|                                                   |</echo>
+				<echo>| E M A I L   W A S   N O T    S E N T              |</echo>
+				<echo>|                                                   |</echo>
+				<echo>+---------------------------------------------------+</echo>
+			</else>
+		</if>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- delete the contents of the src directory                            -->
+	<!-- =================================================================== -->
+	<target name="deletesrc" unless="skip.target" description="deletes source file directory">
+		<!-- set property saying whether src exists or not -->
+		<if>
+			<equals arg1="${available.srcDir}" arg2="true" />
+			<then>
+				<echo>Directory src does exist, cleaning it out</echo>
+				<delete includeemptydirs="true" verbose="true">
+					<fileset dir="${src}" includes="**/*" defaultexcludes="false"/>
+				</delete>
+			</then>
+		</if>
+	</target>
+<!-- ###################################################################### -->
+<!-- # Section:<Section name>                                             # -->
+<!-- #     Description: <Section Discription>                             # -->
+<!-- ###################################################################### -->
+</project>
