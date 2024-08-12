@@ -1,0 +1,25 @@
+<project name="Encrypt a password" default="run" basedir=".">
+	<description>
+		This build was created to test the trust cert ant task
+	</description>
+
+	<taskdef resource="net/sf/antcontrib/antlib.xml"/>
+
+	<taskdef name="trustcertificate" classname="com.omo.free.trustcert.TrustCertTask" />
+
+	<!-- =================================================================== -->
+	<!-- Initialize the Properties                                           -->
+	<!-- =================================================================== -->
+	<target name="init" description="initialize properties for build">
+			<echo>Initializing properties here...</echo>
+			<tstamp />
+			<property environment="env"/>
+			<!-- <echoproperties/> -->
+	</target>
+
+	<target name="run" depends="init" description="initialize properties for build">
+		<echo>Testing the password encryptor...</echo>
+		<trustcertificate secureUrl="https://isuwsphere2svr.isu.net" keystoreDir="./test" verbose="true" failonerror="true"/>
+		<get src="https://isuwsphere2svr.isu.net/doc/PuppiesForParolePublic/monitor.html" dest="."  verbose="true" usetimestamp="true"/>
+	</target>
+</project>
